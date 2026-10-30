@@ -170,6 +170,13 @@ jobs:
     needs: [build-ios, build-android, build-windows]
     if: ${{ always() && needs.build-ios.result == 'success' && needs.build-android.result == 'success' && (needs.build-windows.result == 'success' || needs.build-windows.result == 'skipped') }}
     steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Generate and commit the SideStore icon
+        run: |
+          npx --yes sharp-cli -i assets/icon.svg -o assets/icon.png resize 1024 1024
       - name: Download IPA
         uses: actions/download-artifact@v4
         with:
@@ -240,8 +247,8 @@ jobs:
           fs.writeFileSync(sourcePath, JSON.stringify(source, null, 2) + '\n');
           NODE
           FILE_SHA=$(gh api "repos/$GITHUB_REPOSITORY/contents/sidestore-source.json" --jq .sha)
-          gh api "repos/$GITHUB_REPOSITORY/contents/sidestore-source.json" --method PUT \
-            --field message="Update Vera SideStore source for $RELEASE_TAG" \
-            --field content="$(base64 -w0 sidestore-source.json)" \
-            --field sha="$FILE_SHA" \
-            --field branch=main
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/icon.png sidestore-source.json
+          git commit -m "Publish Vera SideStore source for $RELEASE_TAG"
+          git push
