@@ -1,25 +1,25 @@
 {
-  "name": "Veyra",
+  "name": "Vera",
   "subtitle": "A calmer web browser",
-  "description": "Veyra Browser for iPhone and iPad.",
-  "iconURL": "https://raw.githubusercontent.com/theDevstars/veyra-browser/main/assets/icon.png",
-  "website": "https://github.com/theDevstars/veyra-browser",
+  "description": "Vera Browser for iPhone and iPad.",
+  "iconURL": "https://raw.githubusercontent.com/theDevstars/Vera/main/assets/icon.png",
+  "website": "https://github.com/theDevstars/Vera",
   "tintColor": "#DDAF64",
   "apps": [
     {
-      "name": "Veyra",
-      "bundleIdentifier": "com.thedevstars.veyra",
+      "name": "Vera",
+      "bundleIdentifier": "com.thedevstars.vera",
       "developerName": "theDevstars",
       "subtitle": "Browse with a little more calm",
       "localizedDescription": "Search the web, save pages, and use built-in privacy controls.",
-      "iconURL": "https://raw.githubusercontent.com/theDevstars/veyra-browser/main/assets/icon.png",
+      "iconURL": "https://raw.githubusercontent.com/theDevstars/Vera/main/assets/icon.png",
       "tintColor": "#DDAF64",
       "category": "utilities",
       "versions": [],
       "appPermissions": {
         "entitlements": [],
         "privacy": {
-          "NSPhotoLibraryUsageDescription": "Choose a wallpaper for Veyra Browser."
+          "NSPhotoLibraryUsageDescription": "Choose a wallpaper for Vera Browser."
         }
       }
     }
