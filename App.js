@@ -727,11 +727,49 @@ export default function App() {
         <ScrollView style={[styles.homeScroll, { backgroundColor: palette.bg }]} contentContainerStyle={[styles.homeContent, styles.veloHomeContent]} keyboardShouldPersistTaps="handled">
           <View style={styles.veloHero}>
             <View style={styles.veloMark}><Text style={styles.veloMarkText}>V</Text></View>
+            <Text style={[styles.eyebrow, { marginTop: 14 }]}>YOUR SPACE ON THE WEB</Text>
             <Text style={[styles.veloGreeting, { color: palette.text }]}>{greeting}</Text>
-            <Text style={[styles.veloPrivacy, { color: palette.muted }]}>◇  Vera privacy {settings.privateBrowsing ? 'is active' : 'settings are ready'}</Text>
+            <Text style={[styles.welcomeBody, { color: palette.muted, textAlign: 'center' }]}>A calmer place to search, read, and explore.</Text>
           </View>
+
+          {settings.showDailyVerse !== false && <View style={[styles.verseCard, styles.veloVerseCard, { backgroundColor: palette.surfaceAlt, borderColor: palette.border }]}>
+            <View style={styles.verseTopline}>
+              <View style={styles.verseLabelWrap}><Text style={styles.verseSpark}>✦</Text><Text style={styles.verseLabel}>TODAY’S VERSE</Text></View>
+              <Text style={styles.verseReference}>{dailyVerse.reference.toUpperCase()}</Text>
+            </View>
+            <Text style={[styles.verseText, { color: isLight ? '#263248' : '#f4f0e7' }]}>{verseText}</Text>
+            <Pressable onPress={() => navigate('https://www.biblegateway.com/passage/?search=' + encodeURIComponent(dailyVerse.reference) + (linkVersion ? '&version=' + linkVersion : ''))} style={styles.verseSourceButton}>
+              <Text style={styles.verseSourceText}>Read in {trLabel} on BibleGateway ↗</Text>
+            </Pressable>
+          </View>}
+
+          {settings.showPrivacySnapshot !== false && <View style={[styles.privacySnapshot, styles.veloPrivacyCard]}>
+            <View style={styles.privacySnapshotIcon}><Text style={styles.privacySnapshotGlyph}>✦</Text></View>
+            <View style={styles.privacySnapshotCopy}>
+              <Text style={styles.privacySnapshotTitle}>Your privacy, at a glance</Text>
+              <Text style={styles.privacySnapshotBody}>{settings.privateBrowsing ? 'Private browsing is on.' : 'Private browsing is off.'} {settings.blockThirdPartyCookies ? 'Third-party cookies are blocked.' : 'Third-party cookies are allowed.'}</Text>
+            </View>
+            <Pressable onPress={() => { setSettingsVisible(true); setSettingsCategory('Security & privacy'); }} style={styles.privacySnapshotAction}><Text style={styles.privacySnapshotActionText}>Review</Text></Pressable>
+          </View>}
+
+          {settings.showBookmarksSection !== false && <>
+            <View style={styles.sectionHeading}>
+              <Text style={[styles.sectionTitle, { color: palette.text }]}>Your bookmarks</Text>
+              <Pressable onPress={() => setBookmarksVisible(true)}><Text style={styles.seeAll}>MANAGE</Text></Pressable>
+            </View>
+            {bookmarks.length === 0 ? (
+              <Pressable onPress={() => openBookmarkEditor()} style={styles.bookmarkEmptyHome}><Text style={styles.bookmarkEmptyText}>＋ Add a bookmark to start your space</Text></Pressable>
+            ) : bookmarks.slice(0, 4).map((item) => (
+              <Pressable key={item.id} onPress={() => openSavedPage(item)} style={[styles.savedHomeRow, styles.veloRecentRow, { backgroundColor: palette.surfaceAlt, borderColor: palette.border, borderWidth: 1 }]}>
+                <Text style={styles.savedHomeMark}>◎</Text>
+                <View style={styles.savedHomeCopy}><Text numberOfLines={1} style={[styles.savedHomeTitle, { color: palette.text }]}>{item.name}</Text><Text numberOfLines={1} style={[styles.savedHomeUrl, { color: palette.muted }]}>{item.url.replace(/^https?:\\/\\//, '')}</Text></View>
+                <Text style={styles.quickArrow}>›</Text>
+              </Pressable>
+            ))}
+          </>}
+
           {enabledPaths.length > 0 && <>
-            <View style={styles.veloSectionHeading}><Text style={[styles.sectionTitle, { color: palette.text }]}>Shortcuts</Text></View>
+            <View style={styles.veloSectionHeading}><Text style={[styles.sectionTitle, { color: palette.text }]}>Quick paths</Text></View>
             <View style={styles.veloShortcutGrid}>
               {enabledPaths.map((item) => (
                 <Pressable key={item.title} onPress={() => navigate(item.url)} style={({ pressed }) => [styles.veloShortcut, { backgroundColor: palette.surfaceAlt, borderColor: palette.border }, pressed && styles.pressed]}>
@@ -741,43 +779,25 @@ export default function App() {
               ))}
             </View>
           </>}
-          {settings.showDailyVerse && <View style={[styles.verseCard, styles.veloVerseCard, { backgroundColor: palette.surfaceAlt, borderColor: palette.border }]}>
-            <View style={styles.verseTopline}><Text style={styles.verseLabel}>✦  TODAY’S VERSE</Text><Text style={styles.verseReference}>{dailyVerse.reference.toUpperCase()}</Text></View>
-            <Text style={[styles.verseText, { color: isLight ? '#263248' : '#f4f0e7' }]}>{verseText}</Text>
-            <Pressable onPress={() => navigate('https://www.biblegateway.com/passage/?search=' + encodeURIComponent(dailyVerse.reference) + (linkVersion ? '&version=' + linkVersion : ''))} style={styles.verseSourceButton}>
-              <Text style={styles.verseSourceText}>Read in {trLabel} on BibleGateway ↗</Text>
-            </Pressable>
-          </View>}
-          <View style={styles.sectionHeading}>
-        <Text style={[styles.sectionTitle, { color: palette.text }]}>Apps & websites</Text>
-        <Text style={[styles.sectionHint, { color: palette.muted }]}>Your web app launcher</Text>
-      </View>
-      <View style={styles.webAppGrid}>
-        {WEB_APPS.map((app) => {
-          const added = bookmarks.some((item) => item.url.replace(/\/$/, '') === app.url.replace(/\/$/, ''));
-          return (
-            <Pressable key={app.name} onPress={() => added ? openSavedPage(bookmarks.find((item) => item.url.replace(/\/$/, '') === app.url.replace(/\/$/, ''))) : addWebApp(app)} style={({ pressed }) => [styles.webAppTile, { backgroundColor: palette.surfaceAlt, borderColor: palette.border }, pressed && styles.pressed]}>
-              <View style={[styles.webAppMark, { backgroundColor: app.color + '24' }]}><Text style={[styles.webAppMarkText, { color: app.color }]}>{app.mark}</Text></View>
-              <Text numberOfLines={1} style={[styles.webAppName, { color: palette.text }]}>{app.name}</Text>
-              <Text style={[styles.webAppAction, { color: palette.accent }]}>{added ? 'Added · Open' : '+ Add'}</Text>
-            </Pressable>
-          );
-        })}
-      </View>
 
-      {settings.showPrivacySnapshot !== false && <View style={[styles.privacySnapshot, styles.veloPrivacyCard]}>
-            <View style={styles.privacySnapshotIcon}><Text style={styles.privacySnapshotGlyph}>✦</Text></View>
-            <View style={styles.privacySnapshotCopy}><Text style={styles.privacySnapshotTitle}>Your privacy, at a glance</Text><Text style={styles.privacySnapshotBody}>{settings.privateBrowsing ? 'Private browsing is on.' : 'Private browsing is off.'} {settings.blockThirdPartyCookies ? 'Third-party cookies are blocked.' : 'Third-party cookies are allowed.'}</Text></View>
-            <Pressable onPress={() => { setSettingsVisible(true); setSettingsCategory('Security & privacy'); }} style={styles.privacySnapshotAction}><Text style={styles.privacySnapshotActionText}>Review</Text></Pressable>
-          </View>}
-          {settings.showBookmarksSection !== false && <>
-            <View style={styles.sectionHeading}><Text style={[styles.sectionTitle, { color: palette.text }]}>Recents & saved pages</Text><Pressable onPress={() => setBookmarksVisible(true)}><Text style={styles.seeAll}>VIEW ALL</Text></Pressable></View>
-            {bookmarks.length === 0 ? <Pressable onPress={() => openBookmarkEditor()} style={styles.bookmarkEmptyHome}><Text style={styles.bookmarkEmptyText}>＋ Save a page to see it here</Text></Pressable> : bookmarks.slice(0, 4).map((item) => (
-              <Pressable key={item.id} onPress={() => openSavedPage(item)} style={[styles.savedHomeRow, styles.veloRecentRow, { backgroundColor: palette.surfaceAlt, borderColor: palette.border, borderWidth: 1 }]}>
-                <Text style={styles.savedHomeMark}>◎</Text><View style={styles.savedHomeCopy}><Text numberOfLines={1} style={[styles.savedHomeTitle, { color: palette.text }]}>{item.name}</Text><Text numberOfLines={1} style={[styles.savedHomeUrl, { color: palette.muted }]}>{item.url.replace(/^https?:\/\//, '')}</Text></View><Text style={styles.quickArrow}>›</Text>
-              </Pressable>
-            ))}
-          </>}
+          <View style={styles.sectionHeading}>
+            <Text style={[styles.sectionTitle, { color: palette.text }]}>Apps & websites</Text>
+            <Text style={[styles.sectionHint, { color: palette.muted }]}>Your mobile web launcher</Text>
+          </View>
+          <View style={styles.webAppGrid}>
+            {WEB_APPS.map((app) => {
+              const savedApp = bookmarks.find((item) => item.url.replace(/\\/$/, '') === app.url.replace(/\\/$/, ''));
+              const added = Boolean(savedApp);
+              return (
+                <Pressable key={app.name} onPress={() => added ? openSavedPage(savedApp) : addWebApp(app)} style={({ pressed }) => [styles.webAppTile, { backgroundColor: palette.surfaceAlt, borderColor: palette.border }, pressed && styles.pressed]}>
+                  <View style={[styles.webAppMark, { backgroundColor: app.color + '24' }]}><Text style={[styles.webAppMarkText, { color: app.color }]}>{app.mark}</Text></View>
+                  <Text numberOfLines={1} style={[styles.webAppName, { color: palette.text }]}>{app.name}</Text>
+                  <Text style={[styles.webAppAction, { color: palette.accent }]}>{added ? 'Added · Open' : '+ Add'}</Text>
+                </Pressable>
+              );
+            })}
+          </View>
+
           {settings.showSearchFooter !== false && <Text style={styles.footerNote}>VERA · SEARCH WITH {settings.searchEngine.toUpperCase()}</Text>}
         </ScrollView>
       );
