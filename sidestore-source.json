@@ -18,7 +18,7 @@
       "versions": [
         {
           "version": "1.0.20",
-          "buildVersion": 20,
+          "buildVersion": "20",
           "date": "2026-10-30T20:29:24.458Z",
           "localizedDescription": "Vera for iPhone and iPad.",
           "downloadURL": "https://github.com/theDevstars/Vera/releases/download/vera-v1.0.20/Vera-unsigned.ipa",
@@ -28,7 +28,7 @@
       "appPermissions": {
         "entitlements": [],
         "privacy": {
-          "NSPhotoLibraryUsageDescription": "Choose a wallpaper for Vera Browser."
+          "NSPhotoLibraryUsageDescription": "Choose a wallpaper for Vera."
         }
       }
     }
