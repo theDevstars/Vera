@@ -1,0 +1,247 @@
+name: Build Vera IPA, APK and EXE
+
+concurrency:
+  group: vera-build-${{ github.ref }}
+  cancel-in-progress: false
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "app.json"
+      - "App.js"
+      - "package.json"
+      - "assets/**"
+      - "desktop/**"
+      - ".github/workflows/build-vera.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  build-ios:
+    name: Build iOS IPA (unsigned)
+    runs-on: macos-15
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Verify app configuration
+        run: |
+          test -f app.json || { echo "app.json is missing"; exit 1; }
+          test -f App.js || { echo "App.js is missing"; exit 1; }
+          node -e "const c=require('./app.json').expo; if(!c.ios?.bundleIdentifier) throw new Error('ios.bundleIdentifier is missing in app.json')"
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+      - name: Set native app version
+        env:
+          BUILD_NUMBER: ${{ github.run_number }}
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const p = 'app.json';
+          const config = JSON.parse(fs.readFileSync(p, 'utf8'));
+          const build = process.env.BUILD_NUMBER;
+          config.expo.version = '1.0.' + build;
+          config.expo.ios = { ...config.expo.ios, buildNumber: String(build) };
+          config.expo.android = { ...config.expo.android, versionCode: Number(build) };
+          fs.writeFileSync(p, JSON.stringify(config, null, 2) + '\n');
+          NODE
+      - name: Generate iOS project
+        run: npx expo prebuild --platform ios --non-interactive --no-install
+      - name: Install CocoaPods dependencies
+        working-directory: ios
+        timeout-minutes: 20
+        run: pod install
+      - name: Build iOS app
+        run: |
+          cd ios
+          WORKSPACE=$(find . -maxdepth 1 -name '*.xcworkspace' -print -quit)
+          if [ -z "$WORKSPACE" ]; then echo "No Xcode workspace found"; ls -la; exit 1; fi
+          SCHEME=$(xcodebuild -list -json -workspace "$WORKSPACE" | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{const j=JSON.parse(d);const w=Object.values(j).find(v=>v&&v.schemes);if(!w)process.exit(2);const s=w.schemes.find(x=>x==='Vera')||w.schemes.find(x=>!/(^Pods$|^Expo|^EX|^React|^hermes)/i.test(x));if(!s)process.exit(3);console.log(s)})")
+          echo "Using workspace $WORKSPACE and scheme $SCHEME"
+          xcodebuild -workspace "$WORKSPACE" -scheme "$SCHEME" -configuration Release -sdk iphoneos -derivedDataPath build CODE_SIGNING_ALLOWED=NO build
+      - name: Package unsigned IPA
+        run: |
+          APP_PATH=$(find ios/build/Build/Products/Release-iphoneos -maxdepth 1 -type d -name '*.app' -print -quit)
+          if [ -z "$APP_PATH" ]; then
+            echo "No .app bundle found in ios/build/Build/Products/Release-iphoneos"
+            find ios/build -type d -name '*.app' -print || true
+            exit 1
+          fi
+          rm -rf Payload Vera-unsigned.ipa
+          mkdir Payload
+          cp -R "$APP_PATH" Payload/
+          zip -qr Vera-unsigned.ipa Payload
+          test -s Vera-unsigned.ipa
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Vera-unsigned-IPA
+          path: Vera-unsigned.ipa
+          if-no-files-found: error
+          retention-days: 7
+
+  build-android:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - name: Verify app configuration
+        run: |
+          test -f app.json || { echo "app.json is missing"; exit 1; }
+          test -f App.js || { echo "App.js is missing"; exit 1; }
+          node -e "const c=require('./app.json').expo; if(!c.android?.package) throw new Error('android.package is missing in app.json')"
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+      - name: Set native app version
+        env:
+          BUILD_NUMBER: ${{ github.run_number }}
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const p = 'app.json';
+          const config = JSON.parse(fs.readFileSync(p, 'utf8'));
+          const build = process.env.BUILD_NUMBER;
+          config.expo.version = '1.0.' + build;
+          config.expo.ios = { ...config.expo.ios, buildNumber: String(build) };
+          config.expo.android = { ...config.expo.android, versionCode: Number(build) };
+          fs.writeFileSync(p, JSON.stringify(config, null, 2) + '\n');
+          NODE
+      - name: Generate Android project
+        run: npx expo prebuild --platform android --non-interactive --no-install
+      - name: Build APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleRelease
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Vera-APK
+          path: android/app/build/outputs/apk/release/*.apk
+          if-no-files-found: error
+          retention-days: 7
+
+  build-windows:
+    name: Build Windows EXE
+    if: ${{ hashFiles('desktop/package.json') != '' }}
+    runs-on: windows-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: desktop/package-lock.json
+      - name: Install desktop dependencies
+        working-directory: desktop
+        run: npm install
+      - name: Set Windows installer version
+        working-directory: desktop
+        env:
+          RELEASE_VERSION: 1.0.${{ github.run_number }}
+        run: |
+          node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('package.json','utf8'));p.version=process.env.RELEASE_VERSION;fs.writeFileSync('package.json',JSON.stringify(p,null,2)+'\n')"
+      - name: Build Windows installer
+        working-directory: desktop
+        run: npm run dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Vera-Windows-EXE
+          path: desktop/dist/*.exe
+          if-no-files-found: error
+          retention-days: 7
+
+  create-release:
+    name: Publish Vera release
+    runs-on: ubuntu-latest
+    needs: [build-ios, build-android, build-windows]
+    if: ${{ always() && needs.build-ios.result == 'success' && needs.build-android.result == 'success' && (needs.build-windows.result == 'success' || needs.build-windows.result == 'skipped') }}
+    steps:
+      - name: Download IPA
+        uses: actions/download-artifact@v4
+        with:
+          name: Vera-unsigned-IPA
+          path: release-files
+      - name: Download APK
+        uses: actions/download-artifact@v4
+        with:
+          name: Vera-APK
+          path: release-files
+      - name: Download Windows EXE when available
+        if: ${{ needs.build-windows.result == 'success' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: Vera-Windows-EXE
+          path: release-files
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: vera-v1.0.${{ github.run_number }}
+          name: Vera v1.0.${{ github.run_number }}
+          body: |
+            Vera Browser release.
+
+            Included downloads depend on the source files present in this repository:
+            - Android APK for Android devices.
+            - Unsigned iOS IPA. iPhone installation requires appropriate signing/provisioning.
+            - Windows EXE when the desktop/ Electron project is present.
+          prerelease: false
+          make_latest: true
+          files: release-files/*
+      - name: Update SideStore source in this repository
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BUILD_NUMBER: ${{ github.run_number }}
+          RELEASE_TAG: vera-v1.0.${{ github.run_number }}
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs = require('fs');
+          const config = JSON.parse(fs.readFileSync('app.json', 'utf8')).expo;
+          const sourcePath = 'sidestore-source.json';
+          const source = JSON.parse(fs.readFileSync(sourcePath, 'utf8'));
+          const app = source.apps?.[0];
+          if (!app) throw new Error('sidestore-source.json must contain apps[0]');
+          const build = process.env.BUILD_NUMBER;
+          const tag = process.env.RELEASE_TAG;
+          const repo = process.env.GITHUB_REPOSITORY;
+          const bundle = config.ios?.bundleIdentifier;
+          if (!bundle) throw new Error('app.json is missing expo.ios.bundleIdentifier');
+          const releasePath = 'https://github.com/' + repo + '/releases/download/' + tag + '/Vera-unsigned.ipa';
+          const icon = 'https://raw.githubusercontent.com/' + repo + '/main/assets/icon.png';
+          source.name = 'Vera';
+          source.description = 'Vera Browser for iPhone and iPad.';
+          source.website = 'https://github.com/' + repo;
+          source.iconURL = icon;
+          app.name = 'Vera';
+          app.bundleIdentifier = bundle;
+          app.iconURL = icon;
+          app.versions = [{
+            version: '1.0.' + build,
+            buildVersion: Number(build),
+            date: new Date().toISOString(),
+            localizedDescription: 'Vera Browser release.',
+            downloadURL: releasePath,
+            size: fs.statSync('release-files/Vera-unsigned.ipa').size
+          }, ...(app.versions || []).filter(v => Number(v.buildVersion) > Number(build))];
+          fs.writeFileSync(sourcePath, JSON.stringify(source, null, 2) + '\n');
+          NODE
+          FILE_SHA=$(gh api "repos/$GITHUB_REPOSITORY/contents/sidestore-source.json" --jq .sha)
+          gh api "repos/$GITHUB_REPOSITORY/contents/sidestore-source.json" --method PUT \
+            --field message="Update Vera SideStore source for $RELEASE_TAG" \
+            --field content="$(base64 -w0 sidestore-source.json)" \
+            --field sha="$FILE_SHA" \
+            --field branch=main
