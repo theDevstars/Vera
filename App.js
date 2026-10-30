@@ -101,8 +101,8 @@ const AD_TRACKER_HOSTS = [
   'amazon-adsystem.com', 'assoc-amazon.com', 'advertising.amazon.com',
 ];
 const AD_COSMETIC_SCRIPT = `(function() {
-  if (window.__veyraContentFilterInstalled) return true;
-  window.__veyraContentFilterInstalled = true;
+  if (window.__veraContentFilterInstalled) return true;
+  window.__veraContentFilterInstalled = true;
   var hosts = ["doubleclick.net","googlesyndication.com","googleadservices.com","adservice.google.com","pagead2.googlesyndication.com","googletagservices.com","google-analytics.com","analytics.google.com","googletagmanager.com","2mdn.net","admeld.com","admob.com","adsense.com","adnxs.com","adsrvr.org","adform.net","advertising.com","criteo.com","taboola.com","outbrain.com","revcontent.com","mgid.com","zemanta.com","teads.tv","smartadserver.com","openx.net","pubmatic.com","rubiconproject.com","lijit.com","sharethrough.com","indexexchange.com","casalemedia.com","bidswitch.net","yieldmo.com","33across.com","media.net","contextweb.com","sovrn.com","triplelift.com","undertone.com","popads.net","propellerads.com","popcash.net","adsterra.com","connect.facebook.net","facebook.net","pixel.facebook.com","analytics.tiktok.com","ads.tiktok.com","snap.licdn.com","px.ads.linkedin.com","bat.bing.com","clarity.ms","hotjar.com","fullstory.com","mouseflow.com","luckyorange.com","mixpanel.com","segment.io","segment.com","amplitude.com","heapanalytics.com","quantserve.com","scorecardresearch.com","branch.io","adjust.com","appsflyer.com","kochava.com","amazon-adsystem.com","assoc-amazon.com","advertising.amazon.com"];
   function blocked(value) {
     try {
@@ -118,9 +118,9 @@ const AD_COSMETIC_SCRIPT = `(function() {
     'amp-ad,amp-embed,ins.adsbygoogle,.ad-banner,.ad-wrapper,.sponsored-content'
   ].join(',') + '{display:none!important;visibility:hidden!important;pointer-events:none!important}';
   function addStyle() {
-    if (!document.getElementById('__veyra_ad_rules')) {
+    if (!document.getElementById('__vera_ad_rules')) {
       var style = document.createElement('style');
-      style.id = '__veyra_ad_rules';
+      style.id = '__vera_ad_rules';
       style.textContent = css;
       (document.head || document.documentElement).appendChild(style);
     }
@@ -141,13 +141,13 @@ const AD_COSMETIC_SCRIPT = `(function() {
   };
   var nativeOpen = XMLHttpRequest.prototype.open;
   XMLHttpRequest.prototype.open = function(method, url) {
-    if (blocked(url)) { this.__veyraBlocked = true; return nativeOpen.call(this, method, 'about:blank'); }
-    this.__veyraBlocked = false;
+    if (blocked(url)) { this.__veraBlocked = true; return nativeOpen.call(this, method, 'about:blank'); }
+    this.__veraBlocked = false;
     return nativeOpen.apply(this, arguments);
   };
   var nativeSend = XMLHttpRequest.prototype.send;
   XMLHttpRequest.prototype.send = function() {
-    if (this.__veyraBlocked) { try { this.abort(); } catch (_) {} return; }
+    if (this.__veraBlocked) { try { this.abort(); } catch (_) {} return; }
     return nativeSend.apply(this, arguments);
   };
   if (navigator.sendBeacon) {
