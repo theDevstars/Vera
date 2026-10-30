@@ -157,7 +157,7 @@ jobs:
           app.iconURL = icon;
           app.versions = [{
             version: '1.0.' + build,
-            buildVersion: Number(build),
+            buildVersion: String(build),
             date: new Date().toISOString(),
             localizedDescription: 'Vera for iPhone and iPad.',
             downloadURL: releasePath,
