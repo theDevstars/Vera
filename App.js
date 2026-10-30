@@ -925,7 +925,7 @@ export default function App() {
       imageStyle={styles.backgroundImageStyle}
       resizeMode="cover"
     >
-    <SafeAreaView style={[styles.safeRoot, { backgroundColor: isVeloLayout && !url ? 'transparent' : palette.bg }, Platform.OS === 'android' && { paddingTop: NativeStatusBar.currentHeight || 0 }]}>
+    <SafeAreaView style={[styles.safeRoot, { backgroundColor: isVeloLayout ? 'transparent' : palette.bg }, Platform.OS === 'android' && { paddingTop: NativeStatusBar.currentHeight || 0 }]}>
       <NativeStatusBar barStyle={isLight ? 'dark-content' : 'light-content'} backgroundColor={palette.bg} />
       {!url && settings.showHeader !== false && (
       <View style={[styles.header, { backgroundColor: isVeloLayout ? 'transparent' : palette.bg }]}>
@@ -984,7 +984,7 @@ export default function App() {
         />
       ) : renderHome()}
 
-      {settings.showDock !== false ? <View style={[styles.bottomDock, url ? styles.bottomDockBrowsing : styles.bottomDockHome, { backgroundColor: glassSurface }]} accessibilityLabel="Browser dock">
+      {settings.showDock !== false ? <View style={[styles.bottomDock, url ? styles.bottomDockBrowsing : styles.bottomDockHome, isVeloLayout && styles.bottomDockVeloFloating, { backgroundColor: isVeloLayout ? veloGlassSurface : glassSurface, borderColor: isVeloLayout ? veloGlassBorder : palette.border }]} accessibilityLabel="Browser dock">
         <Pressable onPress={goHome} style={({ pressed }) => [styles.dockItem, pressed && styles.pressed]} accessibilityRole="button" accessibilityLabel="Home">
           <Text style={styles.dockGlyph}>⌂</Text>
         </Pressable>
@@ -1490,6 +1490,7 @@ const styles = StyleSheet.create({
   hiddenSettingsButton: { position: 'absolute', right: 12, bottom: 12, width: 42, height: 42, borderRadius: 21, alignItems: 'center', justifyContent: 'center', backgroundColor: '#172238', borderWidth: 1, borderColor: '#e6ad60' },
   bottomDock: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', marginHorizontal: 22, marginTop: 5, marginBottom: Platform.OS === 'ios' ? 8 : 10, paddingHorizontal: 10, paddingVertical: 7, borderRadius: 23, backgroundColor: 'rgba(7, 25, 28, 0.78)', borderWidth: 1, borderColor: '#35435c', shadowColor: '#000', shadowOpacity: 0.22, shadowRadius: 12, shadowOffset: { width: 0, height: 4 }, elevation: 8 },
   bottomDockBrowsing: { marginHorizontal: 12, paddingHorizontal: 7, gap: 5 },
+  bottomDockVeloFloating: { position: 'absolute', left: 14, right: 14, bottom: Platform.OS === 'ios' ? 12 : 16, zIndex: 30, elevation: 18, marginHorizontal: 0, marginTop: 0, marginBottom: 0, minHeight: 62, paddingHorizontal: 10, paddingVertical: 8, borderRadius: 24, borderWidth: 1, backgroundColor: 'rgba(7,25,28,0.28)', shadowColor: '#000', shadowOpacity: 0.28, shadowRadius: 18, shadowOffset: { width: 0, height: 7 } },
   bottomDockHome: { marginHorizontal: 14, marginTop: 10, marginBottom: Platform.OS === 'ios' ? 12 : 14, paddingHorizontal: 12, paddingVertical: 12, minHeight: 76, gap: 8, borderRadius: 26 },
   homeDockSearch: { flex: 1, minWidth: 0, height: 48, borderRadius: 18, paddingLeft: 12, paddingRight: 5 },
   safariAddressBar: { flex: 1, minWidth: 0, height: 42, flexDirection: 'row', alignItems: 'center', backgroundColor: '#0d1728', borderWidth: 1, borderColor: '#3b4961', borderRadius: 15, paddingLeft: 10, paddingRight: 4, gap: 5 },
