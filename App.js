@@ -42,6 +42,7 @@ const DEFAULT_SETTINGS = {
   showPrivacySnapshot: true,
   showBrandTagline: true,
   compactHome: false,
+  veloHomeLayout: false,
   showDockLabels: true,
   showHeader: true,
   showSearchBar: false,
@@ -666,7 +667,53 @@ export default function App() {
     ]);
   };
 
-  const renderHome = () => (
+  const renderHome = () => {
+    if (settings.veloHomeLayout) {
+      const enabledPaths = QUICK_LINKS.filter((item) => settings.quickPaths && settings.quickPaths[item.title]);
+      const greeting = new Date().getHours() < 12 ? 'Good morning' : new Date().getHours() < 18 ? 'Good afternoon' : 'Good evening';
+      return (
+        <ScrollView style={[styles.homeScroll, { backgroundColor: palette.bg }]} contentContainerStyle={[styles.homeContent, styles.veloHomeContent]} keyboardShouldPersistTaps="handled">
+          <View style={styles.veloHero}>
+            <View style={styles.veloMark}><Text style={styles.veloMarkText}>V</Text></View>
+            <Text style={[styles.veloGreeting, { color: palette.text }]}>{greeting}</Text>
+            <Text style={[styles.veloPrivacy, { color: palette.muted }]}>◇  Vera privacy {settings.privateBrowsing ? 'is active' : 'settings are ready'}</Text>
+          </View>
+          {enabledPaths.length > 0 && <>
+            <View style={styles.veloSectionHeading}><Text style={[styles.sectionTitle, { color: palette.text }]}>Shortcuts</Text></View>
+            <View style={styles.veloShortcutGrid}>
+              {enabledPaths.map((item) => (
+                <Pressable key={item.title} onPress={() => navigate(item.url)} style={({ pressed }) => [styles.veloShortcut, { backgroundColor: palette.surfaceAlt, borderColor: palette.border }, pressed && styles.pressed]}>
+                  <Text style={[styles.veloShortcutMark, { color: item.color }]}>{item.mark}</Text>
+                  <Text style={[styles.veloShortcutTitle, { color: palette.text }]}>{item.title}</Text>
+                </Pressable>
+              ))}
+            </View>
+          </>}
+          {settings.showDailyVerse && <View style={[styles.verseCard, styles.veloVerseCard, { backgroundColor: palette.surfaceAlt, borderColor: palette.border }]}>
+            <View style={styles.verseTopline}><Text style={styles.verseLabel}>✦  TODAY’S VERSE</Text><Text style={styles.verseReference}>{dailyVerse.reference.toUpperCase()}</Text></View>
+            <Text style={[styles.verseText, { color: isLight ? '#263248' : '#f4f0e7' }]}>{verseText}</Text>
+            <Pressable onPress={() => navigate('https://www.biblegateway.com/passage/?search=' + encodeURIComponent(dailyVerse.reference) + (linkVersion ? '&version=' + linkVersion : ''))} style={styles.verseSourceButton}>
+              <Text style={styles.verseSourceText}>Read in {trLabel} on BibleGateway ↗</Text>
+            </Pressable>
+          </View>}
+          {settings.showPrivacySnapshot !== false && <View style={[styles.privacySnapshot, styles.veloPrivacyCard]}>
+            <View style={styles.privacySnapshotIcon}><Text style={styles.privacySnapshotGlyph}>✦</Text></View>
+            <View style={styles.privacySnapshotCopy}><Text style={styles.privacySnapshotTitle}>Your privacy, at a glance</Text><Text style={styles.privacySnapshotBody}>{settings.privateBrowsing ? 'Private browsing is on.' : 'Private browsing is off.'} {settings.blockThirdPartyCookies ? 'Third-party cookies are blocked.' : 'Third-party cookies are allowed.'}</Text></View>
+            <Pressable onPress={() => { setSettingsVisible(true); setSettingsCategory('Security & privacy'); }} style={styles.privacySnapshotAction}><Text style={styles.privacySnapshotActionText}>Review</Text></Pressable>
+          </View>}
+          {settings.showBookmarksSection !== false && <>
+            <View style={styles.sectionHeading}><Text style={[styles.sectionTitle, { color: palette.text }]}>Recents & saved pages</Text><Pressable onPress={() => setBookmarksVisible(true)}><Text style={styles.seeAll}>VIEW ALL</Text></Pressable></View>
+            {bookmarks.length === 0 ? <Pressable onPress={() => openBookmarkEditor()} style={styles.bookmarkEmptyHome}><Text style={styles.bookmarkEmptyText}>＋ Save a page to see it here</Text></Pressable> : bookmarks.slice(0, 4).map((item) => (
+              <Pressable key={item.id} onPress={() => openSavedPage(item)} style={[styles.savedHomeRow, styles.veloRecentRow, { backgroundColor: palette.surfaceAlt, borderColor: palette.border, borderWidth: 1 }]}>
+                <Text style={styles.savedHomeMark}>◎</Text><View style={styles.savedHomeCopy}><Text numberOfLines={1} style={[styles.savedHomeTitle, { color: palette.text }]}>{item.name}</Text><Text numberOfLines={1} style={[styles.savedHomeUrl, { color: palette.muted }]}>{item.url.replace(/^https?:\/\//, '')}</Text></View><Text style={styles.quickArrow}>›</Text>
+              </Pressable>
+            ))}
+          </>}
+          {settings.showSearchFooter !== false && <Text style={styles.footerNote}>VERA · SEARCH WITH {settings.searchEngine.toUpperCase()}</Text>}
+        </ScrollView>
+      );
+    }
+    return (
     <ScrollView style={[styles.homeScroll, { backgroundColor: palette.bg }]} contentContainerStyle={[styles.homeContent, settings.compactHome && styles.homeContentCompact]} keyboardShouldPersistTaps="handled">
       {settings.showWelcome !== false && <View style={styles.welcomeBlock}>
         <Text style={styles.eyebrow}>YOUR SPACE ON THE WEB</Text>
@@ -757,7 +804,8 @@ export default function App() {
       </>}
       {settings.showSearchFooter !== false && <Text style={styles.footerNote}>SEARCH POWERED BY {settings.searchEngine.toUpperCase()}</Text>}
     </ScrollView>
-  );
+    );
+  };
 
   return (
     <ImageBackground
@@ -1058,6 +1106,8 @@ export default function App() {
               <Text style={[styles.settingsSectionTitle, { color: palette.accent }]}>Appearance & layout</Text>
               <Text style={[styles.settingsIntro, { color: palette.muted }]}>Tune the start page and bottom dock. Your choices are saved on this device.</Text>
               <View style={[styles.settingsCard, { backgroundColor: palette.surfaceAlt, borderColor: palette.border }]}>
+                <SettingRow title="Vela-inspired start page" detail="Use a modern dashboard layout with a centered welcome, shortcut tiles, privacy status, and recent saved pages." value={!!settings.veloHomeLayout} light={isLight} onValueChange={(value) => updateSetting('veloHomeLayout', value)} />
+                <View style={styles.settingDivider} />
                 <SettingRow title="Compact start page" detail="Use a tighter home-screen layout with a smaller welcome heading." value={!!settings.compactHome} light={isLight} onValueChange={(value) => updateSetting('compactHome', value)} />
                 <View style={styles.settingDivider} />
                 <SettingRow title="Show browser tagline" detail="Show or hide the text beneath the Vera name." value={settings.showBrandTagline !== false} light={isLight} onValueChange={(value) => updateSetting('showBrandTagline', value)} />
@@ -1322,6 +1372,20 @@ const styles = StyleSheet.create({
   homeScroll: { flex: 1 },
   homeContent: { paddingHorizontal: 18, paddingBottom: 30 },
   homeContentCompact: { paddingHorizontal: 13, paddingBottom: 18 },
+  veloHomeContent: { paddingTop: 18 },
+  veloHero: { alignItems: 'center', paddingTop: 14, paddingBottom: 22 },
+  veloMark: { width: 68, height: 68, borderRadius: 23, alignItems: 'center', justifyContent: 'center', backgroundColor: '#2868ed', shadowColor: '#2868ed', shadowOpacity: 0.3, shadowRadius: 15, elevation: 6, marginBottom: 16 },
+  veloMarkText: { color: '#ffffff', fontSize: 38, fontWeight: '900', fontStyle: 'italic' },
+  veloGreeting: { fontSize: 22, fontWeight: '800', letterSpacing: -0.4 },
+  veloPrivacy: { fontSize: 12, marginTop: 7 },
+  veloSectionHeading: { marginTop: 5, marginBottom: 11 },
+  veloShortcutGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 16 },
+  veloShortcut: { width: '22.5%', minWidth: 68, flexGrow: 1, minHeight: 78, borderRadius: 16, borderWidth: 1, alignItems: 'center', justifyContent: 'center', padding: 8, gap: 7 },
+  veloShortcutMark: { fontSize: 23, fontWeight: '800' },
+  veloShortcutTitle: { fontSize: 10, fontWeight: '700', textAlign: 'center' },
+  veloVerseCard: { marginTop: 8, marginBottom: 4 },
+  veloPrivacyCard: { marginTop: 15 },
+  veloRecentRow: { minHeight: 60, borderRadius: 15, paddingHorizontal: 12 },
   welcomeTitleCompact: { fontSize: 25, lineHeight: 30 },
   welcomeBlock: { paddingTop: 14, paddingBottom: 16 },
   eyebrow: { color: '#e7b366', fontSize: 11, fontWeight: '800', letterSpacing: 1.6, marginBottom: 9 },
