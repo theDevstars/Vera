@@ -786,7 +786,7 @@ export default function App() {
           </View>
           <View style={styles.webAppGrid}>
             {WEB_APPS.map((app) => {
-              const savedApp = bookmarks.find((item) => item.url.replace(/\\/$/, '') === app.url.replace(/\\/$/, ''));
+              const savedApp = bookmarks.find((item) => (item.url.endsWith('/') ? item.url.slice(0, -1) : item.url) === (app.url.endsWith('/') ? app.url.slice(0, -1) : app.url));
               const added = Boolean(savedApp);
               return (
                 <Pressable key={app.name} onPress={() => added ? openSavedPage(savedApp) : addWebApp(app)} style={({ pressed }) => [styles.webAppTile, { backgroundColor: palette.surfaceAlt, borderColor: palette.border }, pressed && styles.pressed]}>
