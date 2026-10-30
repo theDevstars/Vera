@@ -137,27 +137,44 @@ jobs:
 
   build-windows:
     name: Build Windows EXE
-    if: ${{ hashFiles('desktop/package.json') != '' }}
     runs-on: windows-latest
     timeout-minutes: 45
+    outputs:
+      has_desktop: ${{ steps.detect.outputs.has_desktop }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Detect desktop project
+        id: detect
+        shell: pwsh
+        run: |
+          if (Test-Path "desktop/package.json") {
+            "has_desktop=true" >> $env:GITHUB_OUTPUT
+          } else {
+            "has_desktop=false" >> $env:GITHUB_OUTPUT
+            Write-Host "No desktop/package.json found; skipping EXE build."
+          }
+      - name: Set up Node
+        if: ${{ steps.detect.outputs.has_desktop == 'true' }}
+        uses: actions/setup-node@v4
         with:
           node-version: 20
       - name: Install desktop dependencies
+        if: ${{ steps.detect.outputs.has_desktop == 'true' }}
         working-directory: desktop
         run: npm install
       - name: Set Windows installer version
+        if: ${{ steps.detect.outputs.has_desktop == 'true' }}
         working-directory: desktop
         env:
           RELEASE_VERSION: 1.0.${{ github.run_number }}
         run: |
           node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('package.json','utf8'));p.version=process.env.RELEASE_VERSION;fs.writeFileSync('package.json',JSON.stringify(p,null,2)+'\n')"
       - name: Build Windows installer
+        if: ${{ steps.detect.outputs.has_desktop == 'true' }}
         working-directory: desktop
         run: npm run dist
       - uses: actions/upload-artifact@v4
+        if: ${{ steps.detect.outputs.has_desktop == 'true' }}
         with:
           name: Vera-Windows-EXE
           path: desktop/dist/*.exe
@@ -188,7 +205,7 @@ jobs:
           name: Vera-APK
           path: release-files
       - name: Download Windows EXE when available
-        if: ${{ needs.build-windows.result == 'success' }}
+        if: ${{ needs.build-windows.outputs.has_desktop == 'true' }}
         uses: actions/download-artifact@v4
         with:
           name: Vera-Windows-EXE
