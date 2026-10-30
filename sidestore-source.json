@@ -1,7 +1,7 @@
 {
   "name": "Vera",
   "subtitle": "A calmer web browser",
-  "description": "Vera Browser for iPhone and iPad.",
+  "description": "Vera for iPhone and iPad.",
   "iconURL": "https://raw.githubusercontent.com/theDevstars/Vera/main/assets/icon.png",
   "website": "https://github.com/theDevstars/Vera",
   "tintColor": "#4D70FF",
@@ -15,7 +15,16 @@
       "iconURL": "https://raw.githubusercontent.com/theDevstars/Vera/main/assets/icon.png",
       "tintColor": "#4D70FF",
       "category": "utilities",
-      "versions": [],
+      "versions": [
+        {
+          "version": "1.0.20",
+          "buildVersion": 20,
+          "date": "2026-10-30T20:29:24.458Z",
+          "localizedDescription": "Vera for iPhone and iPad.",
+          "downloadURL": "https://github.com/theDevstars/Vera/releases/download/vera-v1.0.20/Vera-unsigned.ipa",
+          "size": 7219517
+        }
+      ],
       "appPermissions": {
         "entitlements": [],
         "privacy": {
