@@ -43,6 +43,7 @@ const DEFAULT_SETTINGS = {
   showBrandTagline: true,
   compactHome: false,
   veloHomeLayout: false,
+  glassLevel: 'balanced',
   showDockLabels: true,
   showHeader: true,
   showSearchBar: false,
@@ -341,6 +342,8 @@ export default function App() {
   const palette = isLight
     ? { bg: '#f3f5f9', surface: '#ffffff', surfaceAlt: '#e9edf5', border: '#d5dce8', text: '#172033', muted: '#66738a', accent: '#4169d8', accentSoft: '#e5ebff', dock: 'rgba(255,255,255,0.97)' }
     : { bg: '#0b1220', surface: '#111b2c', surfaceAlt: '#172238', border: '#293752', text: '#f2f5fa', muted: '#93a2b8', accent: '#e8b76d', accentSoft: '#26354d', dock: 'rgba(23,34,56,0.97)' };
+  const glassAlpha = settings.glassLevel === 'clear' ? 0.42 : settings.glassLevel === 'solid' ? 0.94 : 0.72;
+  const glassSurface = isLight ? `rgba(255,255,255,${glassAlpha})` : `rgba(23,34,56,${glassAlpha})`;
   const [passwordMenuOpen, setPasswordMenuOpen] = useState(false);
   const [extensionMenuOpen, setExtensionMenuOpen] = useState(false);
   const [background, setBackground] = useState(null);
@@ -873,12 +876,12 @@ export default function App() {
         />
       ) : renderHome()}
 
-      {settings.showDock !== false ? <View style={[styles.bottomDock, url ? styles.bottomDockBrowsing : styles.bottomDockHome]} accessibilityLabel="Browser dock">
+      {settings.showDock !== false ? <View style={[styles.bottomDock, url ? styles.bottomDockBrowsing : styles.bottomDockHome, { backgroundColor: glassSurface }]} accessibilityLabel="Browser dock">
         <Pressable onPress={goHome} style={({ pressed }) => [styles.dockItem, pressed && styles.pressed]} accessibilityRole="button" accessibilityLabel="Home">
           <Text style={styles.dockGlyph}>⌂</Text>
         </Pressable>
         {url ? (
-          <View style={[styles.safariAddressBar, { backgroundColor: palette.bg, borderColor: palette.border }]}>
+          <View style={[styles.safariAddressBar, { backgroundColor: glassSurface, borderColor: palette.border }]}>
             <Text style={styles.safariLock}>⌑</Text>
             <TextInput
               value={address}
@@ -899,7 +902,7 @@ export default function App() {
             </Pressable>
           </View>
         ) : (
-          <View style={[styles.safariAddressBar, styles.homeDockSearch, { backgroundColor: palette.bg, borderColor: palette.border }]}>
+          <View style={[styles.safariAddressBar, styles.homeDockSearch, { backgroundColor: glassSurface, borderColor: palette.border }]}>
             <Text style={styles.safariLock}>⌕</Text>
             <TextInput
               value={address}
@@ -1106,7 +1109,21 @@ export default function App() {
               <Text style={[styles.settingsSectionTitle, { color: palette.accent }]}>Appearance & layout</Text>
               <Text style={[styles.settingsIntro, { color: palette.muted }]}>Tune the start page and bottom dock. Your choices are saved on this device.</Text>
               <View style={[styles.settingsCard, { backgroundColor: palette.surfaceAlt, borderColor: palette.border }]}>
-                <SettingRow title="Velo-inspired start page" detail="Use a modern dashboard layout with a centered welcome, shortcut tiles, privacy status, and recent saved pages." value={!!settings.veloHomeLayout} light={isLight} onValueChange={(value) => updateSetting('veloHomeLayout', value)} />
+                <SettingRow title="Velo-inspired start page" detail="Use the modern dashboard layout with shortcut tiles and saved pages." value={!!settings.veloHomeLayout} light={isLight} onValueChange={(value) => updateSetting('veloHomeLayout', value)} />
+                <View style={styles.settingDivider} />
+                <SettingRow title="Original Vera interface (OGUI)" detail="Switch back to Vera’s classic home-screen layout." value={!settings.veloHomeLayout} light={isLight} onValueChange={(value) => updateSetting('veloHomeLayout', !value)} />
+                <View style={styles.settingDivider} />
+                <View style={{ paddingHorizontal: 14, paddingVertical: 12 }}>
+                  <Text style={[styles.settingTitle, { color: isLight ? '#172033' : palette.text }]}>Glass transparency</Text>
+                  <Text style={[styles.settingDetail, { color: palette.muted, marginBottom: 10 }]}>Choose how see-through the dock and search field look.</Text>
+                  <View style={{ flexDirection: 'row', gap: 8 }}>
+                    {['clear', 'balanced', 'solid'].map((level) => (
+                      <Pressable key={level} onPress={() => updateSetting('glassLevel', level)} style={{ flex: 1, paddingVertical: 10, borderRadius: 12, alignItems: 'center', borderWidth: 1, borderColor: settings.glassLevel === level ? palette.accent : palette.border, backgroundColor: settings.glassLevel === level ? palette.accentSoft : palette.surface }}>
+                        <Text style={{ color: palette.text, fontSize: 12, fontWeight: '700' }}>{level === 'clear' ? 'More clear' : level === 'solid' ? 'Less clear' : 'Balanced'}</Text>
+                      </Pressable>
+                    ))}
+                  </View>
+                </View>
                 <View style={styles.settingDivider} />
                 <SettingRow title="Compact start page" detail="Use a tighter home-screen layout with a smaller welcome heading." value={!!settings.compactHome} light={isLight} onValueChange={(value) => updateSetting('compactHome', value)} />
                 <View style={styles.settingDivider} />
