@@ -1073,6 +1073,7 @@ export default function App() {
                   {settings.theme === 'light' && <Text style={[styles.themeChoiceCheck, { color: '#4169d8' }]}>✓</Text>}
                 </Pressable>
               </View>
+              {!settings.veloHomeLayout ? (<>
               <Text style={[styles.settingsSectionTitle, { color: palette.accent }]}>Interface controls</Text>
               <Text style={[styles.settingsIntro, { color: palette.muted }]}>Choose exactly what stays on screen. Hide Everything keeps a small Settings button available so you can restore your layout.</Text>
               <View style={styles.backgroundActions}>
@@ -1095,8 +1096,14 @@ export default function App() {
                 <SettingRow title="Search provider footer" detail="Show or hide the search engine note at the bottom." value={settings.showSearchFooter !== false} light={isLight} onValueChange={(value) => updateSetting('showSearchFooter', value)} />
               </View>
 
+              </>) : (
+                <View style={[styles.settingsCard, { backgroundColor: palette.surfaceAlt, borderColor: palette.border, padding: 16, marginBottom: 16 }]}>
+                  <Text style={{ color: palette.text, fontSize: 16, fontWeight: '800', marginBottom: 6 }}>Velo · Curated experience</Text>
+                  <Text style={{ color: palette.muted, fontSize: 13, lineHeight: 19 }}>This layout is intentionally pre-designed. Its spacing, cards, shortcuts and dock are kept consistent so it looks polished without needing lots of setup.</Text>
+                </View>
+              )}
               <Text style={[styles.settingsSectionTitle, { color: palette.accent }]}>Home screen</Text>
-              <Text style={[styles.settingsIntro, { color: palette.muted }]}>Choose what appears when Vera opens.</Text>
+              <Text style={[styles.settingsIntro, { color: palette.muted }]}>OGUI lets you fine-tune the home screen. Switch to Velo for a complete, ready-made design.</Text>
               <View style={[styles.settingsCard, { backgroundColor: palette.surfaceAlt, borderColor: palette.border }]}>
                 <SettingRow
                   title="Daily Bible verse"
@@ -1390,19 +1397,19 @@ const styles = StyleSheet.create({
   homeContent: { paddingHorizontal: 18, paddingBottom: 30 },
   homeContentCompact: { paddingHorizontal: 13, paddingBottom: 18 },
   veloHomeContent: { paddingTop: 18 },
-  veloHero: { alignItems: 'center', paddingTop: 14, paddingBottom: 22 },
+  veloHero: { alignItems: 'flex-start', paddingTop: 22, paddingBottom: 26, paddingHorizontal: 4 },
   veloMark: { width: 68, height: 68, borderRadius: 23, alignItems: 'center', justifyContent: 'center', backgroundColor: '#2868ed', shadowColor: '#2868ed', shadowOpacity: 0.3, shadowRadius: 15, elevation: 6, marginBottom: 16 },
   veloMarkText: { color: '#ffffff', fontSize: 38, fontWeight: '900', fontStyle: 'italic' },
-  veloGreeting: { fontSize: 22, fontWeight: '800', letterSpacing: -0.4 },
-  veloPrivacy: { fontSize: 12, marginTop: 7 },
+  veloGreeting: { fontSize: 32, fontWeight: '900', letterSpacing: -1.1, marginTop: 5 },
+  veloPrivacy: { fontSize: 13, marginTop: 9 },
   veloSectionHeading: { marginTop: 5, marginBottom: 11 },
   veloShortcutGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 16 },
-  veloShortcut: { width: '22.5%', minWidth: 68, flexGrow: 1, minHeight: 78, borderRadius: 16, borderWidth: 1, alignItems: 'center', justifyContent: 'center', padding: 8, gap: 7 },
+  veloShortcut: { width: '22.5%', minWidth: 68, flexGrow: 1, minHeight: 92, borderRadius: 21, borderWidth: 1, alignItems: 'center', justifyContent: 'center', padding: 10, gap: 9 },
   veloShortcutMark: { fontSize: 23, fontWeight: '800' },
   veloShortcutTitle: { fontSize: 10, fontWeight: '700', textAlign: 'center' },
-  veloVerseCard: { marginTop: 8, marginBottom: 4 },
-  veloPrivacyCard: { marginTop: 15 },
-  veloRecentRow: { minHeight: 60, borderRadius: 15, paddingHorizontal: 12 },
+  veloVerseCard: { marginTop: 12, marginBottom: 10, borderRadius: 26, padding: 19 },
+  veloPrivacyCard: { marginTop: 18, borderRadius: 24, padding: 17 },
+  veloRecentRow: { minHeight: 68, borderRadius: 19, paddingHorizontal: 15 },
   welcomeTitleCompact: { fontSize: 25, lineHeight: 30 },
   welcomeBlock: { paddingTop: 14, paddingBottom: 16 },
   eyebrow: { color: '#e7b366', fontSize: 11, fontWeight: '800', letterSpacing: 1.6, marginBottom: 9 },
@@ -1491,14 +1498,14 @@ const styles = StyleSheet.create({
   removeButtonText: { color: '#e58c87', fontSize: 13, fontWeight: '700' },
   settingsPage: { flex: 1, backgroundColor: '#0b1220' },
   settingsCategoryList: { gap: 11 },
-  settingsCategoryCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#131e30', borderWidth: 1, borderColor: '#29374d', borderRadius: 17, padding: 15, gap: 13 },
-  settingsCategoryIcon: { width: 42, height: 42, borderRadius: 13, backgroundColor: '#202e43', alignItems: 'center', justifyContent: 'center' },
+  settingsCategoryCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#131e30', borderWidth: 1, borderColor: '#34445f', borderRadius: 22, padding: 17, gap: 14, marginBottom: 4, shadowColor: '#000', shadowOpacity: 0.16, shadowRadius: 12, shadowOffset: { width: 0, height: 5 }, elevation: 3 },
+  settingsCategoryIcon: { width: 50, height: 50, borderRadius: 17, backgroundColor: '#263751', borderWidth: 1, borderColor: '#405675', alignItems: 'center', justifyContent: 'center' },
   settingsCategoryGlyph: { color: '#e8b76d', fontSize: 22, fontWeight: '700' },
   settingsCategoryCopy: { flex: 1, gap: 4 },
-  settingsCategoryTitle: { color: '#f2f5fa', fontSize: 15, fontWeight: '700' },
+  settingsCategoryTitle: { color: '#f2f5fa', fontSize: 16, fontWeight: '800', letterSpacing: -0.2 },
   settingsCategoryDetail: { color: '#93a2b8', fontSize: 12, lineHeight: 17 },
   settingsCategoryChevron: { color: '#8b9bb2', fontSize: 27, paddingLeft: 5 },
-  settingsPageHeader: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 18, paddingTop: 12, paddingBottom: 18, borderBottomWidth: 1, borderBottomColor: '#263248', gap: 12 },
+  settingsPageHeader: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingTop: 18, paddingBottom: 20, borderBottomWidth: 1, borderBottomColor: '#263248', gap: 13, backgroundColor: '#101a2b' },
   settingsBackButton: { width: 42, height: 42, borderRadius: 14, alignItems: 'center', justifyContent: 'center', backgroundColor: '#172238', borderWidth: 1, borderColor: '#293752' },
   settingsBackGlyph: { color: '#e8b76d', fontSize: 34, lineHeight: 38, marginTop: -3 },
   settingsPageHeading: { flex: 1 },
