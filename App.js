@@ -170,6 +170,17 @@ const AD_COSMETIC_SCRIPT = `(function() {
   return true;
 })(); true;`;
 
+const WEB_APPS = [
+  { name: 'GitHub', url: 'https://github.com', mark: '⌘', color: '#aebbd0' },
+  { name: 'Gmail', url: 'https://mail.google.com', mark: '✉', color: '#ea6b5b' },
+  { name: 'Google Drive', url: 'https://drive.google.com', mark: '△', color: '#55a879' },
+  { name: 'Reddit', url: 'https://www.reddit.com', mark: 'r/', color: '#ff7048' },
+  { name: 'ChatGPT', url: 'https://chatgpt.com', mark: '✳', color: '#5bb99a' },
+  { name: 'Discord', url: 'https://discord.com/app', mark: '◉', color: '#8294f5' },
+  { name: 'Spotify', url: 'https://open.spotify.com', mark: '♫', color: '#51bd80' },
+  { name: 'Google Calendar', url: 'https://calendar.google.com', mark: '▦', color: '#6c9cf0' },
+];
+
 const QUICK_LINKS = [
   { title: 'DuckDuckGo', subtitle: 'Private search', url: 'https://duckduckgo.com', mark: 'D', color: '#de5833' },
   { title: 'YouTube', subtitle: 'Watch', url: 'https://www.youtube.com', mark: '▶', color: '#ff4d4d' },
@@ -615,6 +626,15 @@ export default function App() {
     ]);
   };
 
+  const addWebApp = async (app) => {
+    if (bookmarks.some((item) => item.url.replace(/\/$/, '') === app.url.replace(/\/$/, ''))) {
+      Alert.alert('Already added', app.name + ' is already in your saved pages.');
+      return;
+    }
+    const item = { id: String(Date.now()), name: app.name, url: app.url };
+    await updateBookmarks([item, ...bookmarks]);
+  };
+
   const openSavedPage = (bookmark) => {
     setBookmarksVisible(false);
     setAddress(bookmark.url);
@@ -699,7 +719,24 @@ export default function App() {
               <Text style={styles.verseSourceText}>Read in {trLabel} on BibleGateway ↗</Text>
             </Pressable>
           </View>}
-          {settings.showPrivacySnapshot !== false && <View style={[styles.privacySnapshot, styles.veloPrivacyCard]}>
+          <View style={styles.sectionHeading}>
+        <Text style={[styles.sectionTitle, { color: palette.text }]}>Web apps</Text>
+        <Text style={[styles.sectionHint, { color: palette.muted }]}>Add your favorites</Text>
+      </View>
+      <View style={styles.webAppGrid}>
+        {WEB_APPS.map((app) => {
+          const added = bookmarks.some((item) => item.url.replace(/\/$/, '') === app.url.replace(/\/$/, ''));
+          return (
+            <Pressable key={app.name} onPress={() => added ? openSavedPage(bookmarks.find((item) => item.url.replace(/\/$/, '') === app.url.replace(/\/$/, ''))) : addWebApp(app)} style={({ pressed }) => [styles.webAppTile, { backgroundColor: palette.surfaceAlt, borderColor: palette.border }, pressed && styles.pressed]}>
+              <View style={[styles.webAppMark, { backgroundColor: app.color + '24' }]}><Text style={[styles.webAppMarkText, { color: app.color }]}>{app.mark}</Text></View>
+              <Text numberOfLines={1} style={[styles.webAppName, { color: palette.text }]}>{app.name}</Text>
+              <Text style={[styles.webAppAction, { color: palette.accent }]}>{added ? 'Added · Open' : '+ Add'}</Text>
+            </Pressable>
+          );
+        })}
+      </View>
+
+      {settings.showPrivacySnapshot !== false && <View style={[styles.privacySnapshot, styles.veloPrivacyCard]}>
             <View style={styles.privacySnapshotIcon}><Text style={styles.privacySnapshotGlyph}>✦</Text></View>
             <View style={styles.privacySnapshotCopy}><Text style={styles.privacySnapshotTitle}>Your privacy, at a glance</Text><Text style={styles.privacySnapshotBody}>{settings.privateBrowsing ? 'Private browsing is on.' : 'Private browsing is off.'} {settings.blockThirdPartyCookies ? 'Third-party cookies are blocked.' : 'Third-party cookies are allowed.'}</Text></View>
             <Pressable onPress={() => { setSettingsVisible(true); setSettingsCategory('Security & privacy'); }} style={styles.privacySnapshotAction}><Text style={styles.privacySnapshotActionText}>Review</Text></Pressable>
@@ -768,6 +805,23 @@ export default function App() {
           </View>
         </>
       )}
+
+      <View style={styles.sectionHeading}>
+        <Text style={[styles.sectionTitle, { color: palette.text }]}>Web apps</Text>
+        <Text style={[styles.sectionHint, { color: palette.muted }]}>Add your favorites</Text>
+      </View>
+      <View style={styles.webAppGrid}>
+        {WEB_APPS.map((app) => {
+          const added = bookmarks.some((item) => item.url.replace(/\/$/, '') === app.url.replace(/\/$/, ''));
+          return (
+            <Pressable key={app.name} onPress={() => added ? openSavedPage(bookmarks.find((item) => item.url.replace(/\/$/, '') === app.url.replace(/\/$/, ''))) : addWebApp(app)} style={({ pressed }) => [styles.webAppTile, { backgroundColor: palette.surfaceAlt, borderColor: palette.border }, pressed && styles.pressed]}>
+              <View style={[styles.webAppMark, { backgroundColor: app.color + '24' }]}><Text style={[styles.webAppMarkText, { color: app.color }]}>{app.mark}</Text></View>
+              <Text numberOfLines={1} style={[styles.webAppName, { color: palette.text }]}>{app.name}</Text>
+              <Text style={[styles.webAppAction, { color: palette.accent }]}>{added ? 'Added · Open' : '+ Add'}</Text>
+            </Pressable>
+          );
+        })}
+      </View>
 
       {settings.showPrivacySnapshot !== false && <View style={styles.privacySnapshot}>
         <View style={styles.privacySnapshotIcon}><Text style={styles.privacySnapshotGlyph}>✦</Text></View>
@@ -1431,6 +1485,12 @@ const styles = StyleSheet.create({
   homeBookmarkActions: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   bookmarkEmptyHome: { borderWidth: 1, borderColor: '#293752', borderStyle: 'dashed', borderRadius: 14, padding: 14, marginBottom: 8 },
   bookmarkEmptyText: { color: '#aab6c9', fontSize: 12, textAlign: 'center' },
+  webAppGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 18 },
+  webAppTile: { width: '22.5%', minWidth: 70, flexGrow: 1, minHeight: 104, borderRadius: 18, borderWidth: 1, alignItems: 'center', justifyContent: 'center', padding: 9, gap: 7 },
+  webAppMark: { width: 39, height: 39, borderRadius: 13, alignItems: 'center', justifyContent: 'center' },
+  webAppMarkText: { fontSize: 20, fontWeight: '900' },
+  webAppName: { fontSize: 10, fontWeight: '800', textAlign: 'center' },
+  webAppAction: { fontSize: 10, fontWeight: '700' },
   quickGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 9 },
   setupBackdrop: { flex: 1, backgroundColor: 'rgba(4, 8, 18, 0.82)', alignItems: 'center', justifyContent: 'center', padding: 24 },
   setupCard: { width: '100%', maxWidth: 420, borderRadius: 28, paddingHorizontal: 24, paddingVertical: 30, alignItems: 'center', backgroundColor: '#243b88', borderWidth: 1, borderColor: '#536dc0' },
