@@ -172,13 +172,25 @@ const AD_COSMETIC_SCRIPT = `(function() {
 
 const WEB_APPS = [
   { name: 'GitHub', url: 'https://github.com', mark: '⌘', color: '#aebbd0' },
-  { name: 'Gmail', url: 'https://mail.google.com', mark: '✉', color: '#ea6b5b' },
-  { name: 'Google Drive', url: 'https://drive.google.com', mark: '△', color: '#55a879' },
+  { name: 'Epic Games', url: 'https://store.epicgames.com', mark: 'E', color: '#f1f2f4' },
+  { name: 'Steam', url: 'https://store.steampowered.com', mark: 'S', color: '#78a9dc' },
+  { name: 'Roblox', url: 'https://www.roblox.com', mark: '◇', color: '#f4f5f7' },
+  { name: 'YouTube', url: 'https://www.youtube.com', mark: '▶', color: '#ff5555' },
+  { name: 'Twitch', url: 'https://www.twitch.tv', mark: '▣', color: '#a98af5' },
+  { name: 'Netflix', url: 'https://www.netflix.com', mark: 'N', color: '#ed4050' },
+  { name: 'Spotify', url: 'https://open.spotify.com', mark: '♫', color: '#55c985' },
+  { name: 'Discord', url: 'https://discord.com/app', mark: '◉', color: '#8294f5' },
   { name: 'Reddit', url: 'https://www.reddit.com', mark: 'r/', color: '#ff7048' },
   { name: 'ChatGPT', url: 'https://chatgpt.com', mark: '✳', color: '#5bb99a' },
-  { name: 'Discord', url: 'https://discord.com/app', mark: '◉', color: '#8294f5' },
-  { name: 'Spotify', url: 'https://open.spotify.com', mark: '♫', color: '#51bd80' },
+  { name: 'Gmail', url: 'https://mail.google.com', mark: '✉', color: '#ea6b5b' },
+  { name: 'Google Drive', url: 'https://drive.google.com', mark: '△', color: '#55a879' },
   { name: 'Google Calendar', url: 'https://calendar.google.com', mark: '▦', color: '#6c9cf0' },
+  { name: 'Instagram', url: 'https://www.instagram.com', mark: '◎', color: '#e68bc0' },
+  { name: 'TikTok', url: 'https://www.tiktok.com', mark: '♪', color: '#e9f2f5' },
+  { name: 'X', url: 'https://x.com', mark: '𝕏', color: '#f1f2f4' },
+  { name: 'Amazon', url: 'https://www.amazon.com', mark: 'a', color: '#f0ae57' },
+  { name: 'Wikipedia', url: 'https://www.wikipedia.org', mark: 'W', color: '#b7c4d8' },
+  { name: 'Bible Gateway', url: 'https://www.biblegateway.com', mark: '✦', color: '#efb35f' },
 ];
 
 const QUICK_LINKS = [
@@ -720,8 +732,8 @@ export default function App() {
             </Pressable>
           </View>}
           <View style={styles.sectionHeading}>
-        <Text style={[styles.sectionTitle, { color: palette.text }]}>Web apps</Text>
-        <Text style={[styles.sectionHint, { color: palette.muted }]}>Add your favorites</Text>
+        <Text style={[styles.sectionTitle, { color: palette.text }]}>Apps & websites</Text>
+        <Text style={[styles.sectionHint, { color: palette.muted }]}>Your web app launcher</Text>
       </View>
       <View style={styles.webAppGrid}>
         {WEB_APPS.map((app) => {
@@ -1485,12 +1497,12 @@ const styles = StyleSheet.create({
   homeBookmarkActions: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   bookmarkEmptyHome: { borderWidth: 1, borderColor: '#293752', borderStyle: 'dashed', borderRadius: 14, padding: 14, marginBottom: 8 },
   bookmarkEmptyText: { color: '#aab6c9', fontSize: 12, textAlign: 'center' },
-  webAppGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 18 },
-  webAppTile: { width: '22.5%', minWidth: 70, flexGrow: 1, minHeight: 104, borderRadius: 18, borderWidth: 1, alignItems: 'center', justifyContent: 'center', padding: 9, gap: 7 },
-  webAppMark: { width: 39, height: 39, borderRadius: 13, alignItems: 'center', justifyContent: 'center' },
-  webAppMarkText: { fontSize: 20, fontWeight: '900' },
-  webAppName: { fontSize: 10, fontWeight: '800', textAlign: 'center' },
-  webAppAction: { fontSize: 10, fontWeight: '700' },
+  webAppGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: 15, marginBottom: 22, paddingHorizontal: 2 },
+  webAppTile: { width: '22%', minWidth: 0, flexGrow: 0, minHeight: 88, borderRadius: 16, borderWidth: 0, backgroundColor: 'transparent', alignItems: 'center', justifyContent: 'flex-start', padding: 4, gap: 6 },
+  webAppMark: { width: 56, height: 56, borderRadius: 18, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: 'rgba(255,255,255,0.10)' },
+  webAppMarkText: { fontSize: 25, fontWeight: '900' },
+  webAppName: { fontSize: 11, fontWeight: '700', textAlign: 'center', maxWidth: 76 },
+  webAppAction: { fontSize: 9, fontWeight: '700', opacity: 0.9 },
   quickGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 9 },
   setupBackdrop: { flex: 1, backgroundColor: 'rgba(4, 8, 18, 0.82)', alignItems: 'center', justifyContent: 'center', padding: 24 },
   setupCard: { width: '100%', maxWidth: 420, borderRadius: 28, paddingHorizontal: 24, paddingVertical: 30, alignItems: 'center', backgroundColor: '#243b88', borderWidth: 1, borderColor: '#536dc0' },
