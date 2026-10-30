@@ -120,7 +120,7 @@ jobs:
           tag_name: vera-v1.0.${{ github.run_number }}
           name: Vera v1.0.${{ github.run_number }}
           body: |
-            Vera Browser for iPhone and iPad.
+            Vera for iPhone and iPad.
 
             This is an unsigned iOS IPA. Installation requires signing/provisioning through a supported installer.
           prerelease: false
@@ -133,7 +133,7 @@ jobs:
           RELEASE_TAG: vera-v1.0.${{ github.run_number }}
         run: |
           set -euo pipefail
-          cp release-files/icon.png assets/icon.png
+          cp release-files/assets/icon.png assets/icon.png
           node <<'NODE'
           const fs = require('fs');
           const config = JSON.parse(fs.readFileSync('app.json', 'utf8')).expo;
@@ -149,7 +149,7 @@ jobs:
           const releasePath = 'https://github.com/' + repo + '/releases/download/' + tag + '/Vera-unsigned.ipa';
           const icon = 'https://raw.githubusercontent.com/' + repo + '/main/assets/icon.png';
           source.name = 'Vera';
-          source.description = 'Vera Browser for iPhone and iPad.';
+          source.description = 'Vera for iPhone and iPad.';
           source.website = 'https://github.com/' + repo;
           source.iconURL = icon;
           app.name = 'Vera';
@@ -159,7 +159,7 @@ jobs:
             version: '1.0.' + build,
             buildVersion: Number(build),
             date: new Date().toISOString(),
-            localizedDescription: 'Vera Browser for iPhone and iPad.',
+            localizedDescription: 'Vera for iPhone and iPad.',
             downloadURL: releasePath,
             size: fs.statSync('release-files/Vera-unsigned.ipa').size
           }, ...(app.versions || []).filter(v => Number(v.buildVersion) !== Number(build))];
