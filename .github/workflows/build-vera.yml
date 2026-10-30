@@ -37,8 +37,6 @@ jobs:
         run: npm install --legacy-peer-deps
       - name: Generate Vera app icon PNG
         run: npx --yes sharp-cli -i assets/icon.svg -o assets/icon.png resize 1024 1024
-      - name: Generate Vera app icon PNG
-        run: npx --yes sharp-cli -i assets/icon.svg -o assets/icon.png resize 1024 1024
       - name: Set native app version
         env:
           BUILD_NUMBER: ${{ github.run_number }}
@@ -107,6 +105,8 @@ jobs:
           node -e "const c=require('./app.json').expo; if(!c.android?.package) throw new Error('android.package is missing in app.json')"
       - name: Install dependencies
         run: npm install --legacy-peer-deps
+      - name: Generate Vera app icon PNG
+        run: npx --yes sharp-cli -i assets/icon.svg -o assets/icon.png resize 1024 1024
       - name: Set native app version
         env:
           BUILD_NUMBER: ${{ github.run_number }}
