@@ -136,7 +136,7 @@ const AD_COSMETIC_SCRIPT = `(function() {
   var nativeFetch = window.fetch;
   if (nativeFetch) window.fetch = function(input, init) {
     var value = typeof input === 'string' ? input : input && input.url;
-    if (value && blocked(value)) return Promise.reject(new TypeError('Blocked by Veyra content filter'));
+    if (value && blocked(value)) return Promise.reject(new TypeError('Blocked by Vera content filter'));
     return nativeFetch.apply(this, arguments);
   };
   var nativeOpen = XMLHttpRequest.prototype.open;
@@ -598,7 +598,7 @@ export default function App() {
   };
 
   const deleteBookmark = (bookmark) => {
-    Alert.alert('Remove saved page?', '“' + bookmark.name + '” will be removed from Veyra.', [
+    Alert.alert('Remove saved page?', '“' + bookmark.name + '” will be removed from Vera.', [
       { text: 'Cancel', style: 'cancel' },
       {
         text: 'Remove',
@@ -622,7 +622,7 @@ export default function App() {
     try {
       const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (!permission.granted) {
-        Alert.alert('Photo access needed', 'Allow Veyra to choose a photo for your home background.');
+        Alert.alert('Photo access needed', 'Allow Vera to choose a photo for your home background.');
         return;
       }
       const result = await ImagePicker.launchImageLibraryAsync({
@@ -647,8 +647,8 @@ export default function App() {
 
   const clearBrowserData = () => {
     const message = Platform.OS === 'android'
-      ? 'This clears cached website files and the current browser history. Your saved pages stay in Veyra.'
-      : 'This closes the current page and clears the WebView history. Private-session cookie and site-data behavior can vary by iOS version. Your saved pages stay in Veyra.';
+      ? 'This clears cached website files and the current browser history. Your saved pages stay in Vera.'
+      : 'This closes the current page and clears the WebView history. Private-session cookie and site-data behavior can vary by iOS version. Your saved pages stay in Vera.';
     Alert.alert('Clear browsing history?', message, [
       { text: 'Cancel', style: 'cancel' },
       {
@@ -773,7 +773,7 @@ export default function App() {
         <View style={styles.brand}>
           <Image source={require('./assets/icon.png')} style={styles.brandIcon} />
           <View>
-            <Text style={[styles.brandName, { color: palette.text }]}>Veyra</Text>
+            <Text style={[styles.brandName, { color: palette.text }]}>Vera</Text>
             {settings.showBrandTagline !== false && <Text style={[styles.brandTagline, { color: palette.muted }]}>Browse with a little more calm</Text>}
           </View>
         </View>
@@ -970,7 +970,7 @@ export default function App() {
         <View style={styles.setupBackdrop}>
           <View style={styles.setupCard}>
             <Text style={styles.setupSpark}>✳</Text>
-            <Text style={styles.setupTitle}>Meet Veyra</Text>
+            <Text style={styles.setupTitle}>Meet Vera</Text>
             <Text style={styles.setupBody}>Let’s set up your browser just the way you like it. Start with privacy-minded defaults, then choose which shortcuts appear on your home screen.</Text>
             <Pressable style={styles.setupPrimary} onPress={() => finishSetup(false)}><Text style={styles.setupPrimaryText}>✓  Use defaults</Text></Pressable>
             <Pressable style={styles.setupSecondary} onPress={() => finishSetup(true)}><Text style={styles.setupSecondaryText}>→  Configure</Text></Pressable>
@@ -981,12 +981,12 @@ export default function App() {
       <Modal visible={settingsVisible} animationType="slide" transparent={false} presentationStyle="fullScreen" onRequestClose={() => setSettingsVisible(false)}>
         <SafeAreaView style={[styles.settingsPage, { backgroundColor: palette.bg }]}>
           <View style={[styles.settingsPageHeader, { borderBottomColor: palette.border }]}>
-            <Pressable onPress={() => { if (settingsCategory) setSettingsCategory(null); else setSettingsVisible(false); }} style={({ pressed }) => [styles.settingsBackButton, pressed && styles.pressed]} accessibilityRole="button" accessibilityLabel="Back to Veyra">
+            <Pressable onPress={() => { if (settingsCategory) setSettingsCategory(null); else setSettingsVisible(false); }} style={({ pressed }) => [styles.settingsBackButton, pressed && styles.pressed]} accessibilityRole="button" accessibilityLabel="Back to Vera">
               <Text style={styles.settingsBackGlyph}>‹</Text>
             </Pressable>
             <View style={styles.settingsPageHeading}>
               <Text style={[styles.settingsPageTitle, { color: palette.text }]}>{settingsCategory || 'Settings'}</Text>
-              <Text style={[styles.settingsPageSubtitle, { color: palette.muted }]}>{settingsCategory ? 'Customize this part of Veyra' : 'Make Veyra work your way'}</Text>
+              <Text style={[styles.settingsPageSubtitle, { color: palette.muted }]}>{settingsCategory ? 'Customize this part of Vera' : 'Make Vera work your way'}</Text>
             </View>
             <Image source={require('./assets/icon.png')} style={styles.settingsPageIcon} />
           </View>
@@ -1011,7 +1011,7 @@ export default function App() {
               <>
                 {settingsCategory === 'Customization' && (<>
               <Text style={[styles.settingsSectionTitle, { color: palette.accent }]}>Color theme</Text>
-              <Text style={[styles.settingsIntro, { color: palette.muted }]}>Choose separate colors for Veyra’s dark and light appearance.</Text>
+              <Text style={[styles.settingsIntro, { color: palette.muted }]}>Choose separate colors for Vera’s dark and light appearance.</Text>
               <View style={styles.themeChoices}>
                 <Pressable onPress={() => updateSetting('theme', 'dark')} style={[styles.themeChoice, { backgroundColor: settings.theme !== 'light' ? '#172238' : palette.surface, borderColor: settings.theme !== 'light' ? '#e8b76d' : palette.border }]}>
                   <Text style={[styles.themeChoiceGlyph, { color: '#e8b76d' }]}>☾</Text><Text style={[styles.themeChoiceText, { color: settings.theme !== 'light' ? '#ffffff' : palette.text }]}>Dark</Text>
@@ -1029,7 +1029,7 @@ export default function App() {
                 <Pressable onPress={() => setInterfacePreset(false)} style={styles.backgroundAction}><Text style={styles.backgroundActionText}>Hide Everything</Text></Pressable>
               </View>
               <View style={[styles.settingsCard, { backgroundColor: palette.surfaceAlt, borderColor: palette.border }]}>
-                <SettingRow title="Browser header and logo" detail="Show or hide the Veyra branding at the top." value={settings.showHeader !== false} light={isLight} onValueChange={(value) => updateSetting('showHeader', value)} />
+                <SettingRow title="Browser header and logo" detail="Show or hide the Vera branding at the top." value={settings.showHeader !== false} light={isLight} onValueChange={(value) => updateSetting('showHeader', value)} />
                 <View style={styles.settingDivider} />
                 <SettingRow title="Top search bar" detail="Show or hide the search field above the page." value={settings.showSearchBar !== false} light={isLight} onValueChange={(value) => updateSetting('showSearchBar', value)} />
                 <View style={styles.settingDivider} />
@@ -1045,11 +1045,11 @@ export default function App() {
               </View>
 
               <Text style={[styles.settingsSectionTitle, { color: palette.accent }]}>Home screen</Text>
-              <Text style={[styles.settingsIntro, { color: palette.muted }]}>Choose what appears when Veyra opens.</Text>
+              <Text style={[styles.settingsIntro, { color: palette.muted }]}>Choose what appears when Vera opens.</Text>
               <View style={[styles.settingsCard, { backgroundColor: palette.surfaceAlt, borderColor: palette.border }]}>
                 <SettingRow
                   title="Daily Bible verse"
-                  detail="Show or hide the verse on your Veyra home screen."
+                  detail="Show or hide the verse on your Vera home screen."
                   value={settings.showDailyVerse}
                   light={isLight} onValueChange={(value) => updateSetting('showDailyVerse', value)}
                 />
@@ -1060,7 +1060,7 @@ export default function App() {
               <View style={[styles.settingsCard, { backgroundColor: palette.surfaceAlt, borderColor: palette.border }]}>
                 <SettingRow title="Compact start page" detail="Use a tighter home-screen layout with a smaller welcome heading." value={!!settings.compactHome} light={isLight} onValueChange={(value) => updateSetting('compactHome', value)} />
                 <View style={styles.settingDivider} />
-                <SettingRow title="Show browser tagline" detail="Show or hide the text beneath the Veyra name." value={settings.showBrandTagline !== false} light={isLight} onValueChange={(value) => updateSetting('showBrandTagline', value)} />
+                <SettingRow title="Show browser tagline" detail="Show or hide the text beneath the Vera name." value={settings.showBrandTagline !== false} light={isLight} onValueChange={(value) => updateSetting('showBrandTagline', value)} />
                 <View style={styles.settingDivider} />
                 <SettingRow title="Show privacy card" detail="Show or hide the privacy summary on the start page." value={settings.showPrivacySnapshot !== false} light={isLight} onValueChange={(value) => updateSetting('showPrivacySnapshot', value)} />
                 <View style={styles.settingDivider} />
@@ -1074,7 +1074,7 @@ export default function App() {
                     {index > 0 && <View style={styles.settingDivider} />}
                     <SettingRow
                       title={item.title}
-                      detail={'Show ' + item.title + ' on the Veyra home screen.'}
+                      detail={'Show ' + item.title + ' on the Vera home screen.'}
                       value={!!(settings.quickPaths && settings.quickPaths[item.title])}
                       light={isLight} onValueChange={(value) => updateSetting('quickPaths', { ...(settings.quickPaths || DEFAULT_SETTINGS.quickPaths), [item.title]: value })}
                     />
@@ -1083,7 +1083,7 @@ export default function App() {
               </View>
 
               <Text style={[styles.settingsSectionTitle, { color: palette.accent }]}>Home background</Text>
-              <Text style={[styles.settingsIntro, { color: palette.muted }]}>Choose a photo from your library for Veyra’s home screen.</Text>
+              <Text style={[styles.settingsIntro, { color: palette.muted }]}>Choose a photo from your library for Vera’s home screen.</Text>
               <View style={styles.backgroundActions}>
                 <Pressable onPress={chooseBackground} style={({ pressed }) => [styles.backgroundAction, pressed && styles.pressed]}>
                   <Text style={styles.backgroundActionText}>Choose photo</Text>
@@ -1094,7 +1094,7 @@ export default function App() {
               </View>
 
               <Text style={[styles.settingsSectionTitle, { color: palette.accent }]}>Bible translation</Text>
-              <Text style={[styles.settingsIntro, { color: palette.muted }]}>The verse on your Veyra home screen changes to the translation you pick. These are public-domain texts that load from bible-api.com. KJV and WEB also work offline.</Text>
+              <Text style={[styles.settingsIntro, { color: palette.muted }]}>The verse on your Vera home screen changes to the translation you pick. These are public-domain texts that load from bible-api.com. KJV and WEB also work offline.</Text>
               <View style={styles.transWrap}>
                 {[...TRANSLATIONS, ...apiBibles].map((item) => (
                   <Pressable
@@ -1128,7 +1128,7 @@ export default function App() {
                 </>)}
                 {settingsCategory === 'Search' && <>
               <Text style={[styles.settingsSectionTitle, { color: palette.accent }]}>Search</Text>
-              <Text style={[styles.settingsIntro, { color: palette.muted }]}>Choose where Veyra sends search terms. Bang shortcuts like !w and !yt use DuckDuckGo.</Text>
+              <Text style={[styles.settingsIntro, { color: palette.muted }]}>Choose where Vera sends search terms. Bang shortcuts like !w and !yt use DuckDuckGo.</Text>
               <View style={styles.engineOptions}>
                 {Object.keys(SEARCH_ENGINES).map((engine) => (
                   <Pressable
@@ -1181,7 +1181,7 @@ export default function App() {
                 </>}
                 {settingsCategory === 'Security & privacy' && <>
               <Text style={[styles.settingsSectionTitle, { color: palette.accent }]}>Passwords</Text>
-              <Text style={[styles.settingsIntro, { color: palette.muted }]}>Open your password manager inside Veyra. Some providers may require Safari for secure sign-in; Veyra never stores your vault passwords.</Text>
+              <Text style={[styles.settingsIntro, { color: palette.muted }]}>Open your password manager inside Vera. Some providers may require Safari for secure sign-in; Vera never stores your vault passwords.</Text>
               <View style={[styles.settingsCard, { backgroundColor: palette.surfaceAlt, borderColor: palette.border }]}>
                 <Pressable
                   accessibilityRole="button"
@@ -1217,7 +1217,7 @@ export default function App() {
                 </>}
                 {settingsCategory === 'Security & privacy' && <>
               <Text style={[styles.settingsSectionTitle, { color: palette.accent }]}>Security &amp; privacy</Text>
-              <Text style={[styles.settingsIntro, { color: palette.muted }]}>Password managers and browser protections are kept together here. Veyra does not save or read your password vault.</Text>
+              <Text style={[styles.settingsIntro, { color: palette.muted }]}>Password managers and browser protections are kept together here. Vera does not save or read your password vault.</Text>
               <View style={[styles.settingsCard, { backgroundColor: palette.surfaceAlt, borderColor: palette.border }]}>
                 <SettingRow title="Enhanced ad & tracker blocking" detail="Uses an expanded list of ad and tracking domains, hides common ad containers, and blocks many script-based tracking requests. Some ads may still appear because iOS WebView does not expose every network request." value={settings.blockAds} light={isLight} onValueChange={(value) => updateSetting('blockAds', value)} />
                 <View style={styles.settingDivider} />
@@ -1240,8 +1240,8 @@ export default function App() {
                   <Text style={styles.privacyNoteTitle}>Built for a little more privacy</Text>
                   <Text style={styles.privacyNoteBody}>
                     {Platform.OS === 'android'
-                      ? 'Veyra blocks local-file access. Android can restrict third-party cookies; iOS WebView does not provide an equivalent reliable all-cookie switch. Search stays with your selected provider.'
-                      : 'Veyra blocks local-file access. iOS WebView does not provide a reliable switch to block every cookie; private-session behavior can vary by iOS version. Search stays with your selected provider.'}
+                      ? 'Vera blocks local-file access. Android can restrict third-party cookies; iOS WebView does not provide an equivalent reliable all-cookie switch. Search stays with your selected provider.'
+                      : 'Vera blocks local-file access. iOS WebView does not provide a reliable switch to block every cookie; private-session behavior can vary by iOS version. Search stays with your selected provider.'}
                   </Text>
                 </View>
               </View>
