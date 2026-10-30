@@ -762,7 +762,7 @@ export default function App() {
             ) : bookmarks.slice(0, 4).map((item) => (
               <Pressable key={item.id} onPress={() => openSavedPage(item)} style={[styles.savedHomeRow, styles.veloRecentRow, { backgroundColor: palette.surfaceAlt, borderColor: palette.border, borderWidth: 1 }]}>
                 <Text style={styles.savedHomeMark}>◎</Text>
-                <View style={styles.savedHomeCopy}><Text numberOfLines={1} style={[styles.savedHomeTitle, { color: palette.text }]}>{item.name}</Text><Text numberOfLines={1} style={[styles.savedHomeUrl, { color: palette.muted }]}>{item.url.replace(/^https?:\\/\\//, '')}</Text></View>
+                <View style={styles.savedHomeCopy}><Text numberOfLines={1} style={[styles.savedHomeTitle, { color: palette.text }]}>{item.name}</Text><Text numberOfLines={1} style={[styles.savedHomeUrl, { color: palette.muted }]}>{item.url.replace(/^https?:\/\//, '')}</Text></View>
                 <Text style={styles.quickArrow}>›</Text>
               </Pressable>
             ))}
