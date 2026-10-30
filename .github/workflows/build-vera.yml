@@ -62,9 +62,24 @@ jobs:
           cd ios
           WORKSPACE=$(find . -maxdepth 1 -name '*.xcworkspace' -print -quit)
           if [ -z "$WORKSPACE" ]; then echo "No Xcode workspace found"; ls -la; exit 1; fi
-          SCHEME=$(xcodebuild -list -json -workspace "$WORKSPACE" | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{const j=JSON.parse(d);const w=Object.values(j).find(v=>v&&v.schemes);if(!w)process.exit(2);const s=w.schemes.find(x=>x==='Vera')||w.schemes.find(x=>!/(^Pods$|^Expo|^EX|^React|^hermes)/i.test(x));if(!s)process.exit(3);console.log(s)})")
-          echo "Using workspace $WORKSPACE and scheme $SCHEME"
-          xcodebuild -workspace "$WORKSPACE" -scheme "$SCHEME" -configuration Release -sdk iphoneos -derivedDataPath build CODE_SIGNING_ALLOWED=NO build
+          LIST_JSON=$(xcodebuild -list -json -workspace "$WORKSPACE")
+          echo "$LIST_JSON"
+          SCHEME=$(printf '%s' "$LIST_JSON" | node -e "
+            let d='';
+            process.stdin.on('data',c=>d+=c).on('end',()=>{
+              const j=JSON.parse(d);
+              const w=j.workspace || Object.values(j).find(v=>v && Array.isArray(v.schemes));
+              const schemes=w?.schemes || [];
+              const appScheme=schemes.find(x=>x==='VeraBrowser') || schemes.find(x=>x==='Vera');
+              if (!appScheme) {
+                console.error('Could not find VeraBrowser app scheme. Available schemes: '+schemes.join(', '));
+                process.exit(2);
+              }
+              console.log(appScheme);
+            });
+          ")
+          echo "Building Vera app with workspace $WORKSPACE and scheme $SCHEME"
+          xcodebuild -workspace "$WORKSPACE" -scheme "$SCHEME" -configuration Release -sdk iphoneos -derivedDataPath build CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" build
       - name: Package unsigned IPA
         run: |
           APP_PATH=$(find ios/build/Build/Products/Release-iphoneos -maxdepth 1 -type d -name '*.app' -print -quit)
