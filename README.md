@@ -6,7 +6,7 @@
 
 **A calmer way to browse.**
 
-A personal browser project focused on a clean browsing experience, useful shortcuts, saved pages, and privacy controls.
+A personal browser focused on a clean browsing experience, useful shortcuts, saved pages, and privacy controls.
 
 [Latest Releases](https://github.com/theDevstars/Vera/releases) · [Builds](https://github.com/theDevstars/Vera/actions) · [SideStore Source](sidestore-source.json)
 
@@ -14,13 +14,25 @@ A personal browser project focused on a clean browsing experience, useful shortc
 
 ---
 
-## App preview
+## App screenshots
 
-> **Real app screenshots coming soon.** The repository currently contains the Vera app icon but not screenshots of the running app. We’ll add the actual iPhone home screen, webpage view, and settings screens here once they’re supplied, so the gallery accurately represents the app.
+These are screenshots captured from the actual Vera iPhone app.
 
-| Home screen | Browsing | Settings |
-|:--:|:--:|:--:|
-| *Screenshot pending* | *Screenshot pending* | *Screenshot pending* |
+| Vera home | Settings |
+|:--:|:--:|
+| <img src="assets/01-vera-home.png" alt="Vera home screen" width="260" /> | <img src="assets/02-settings.png" alt="Vera settings" width="260" /> |
+
+| Customization | Search settings |
+|:--:|:--:|
+| <img src="assets/03-customization.png" alt="Vera customization settings" width="260" /> | <img src="assets/04-search-settings.png" alt="Vera search settings" width="260" /> |
+
+| Security & privacy | Extensions & tools |
+|:--:|:--:|
+| <img src="assets/05-security-privacy.png" alt="Vera security and privacy settings" width="260" /> | <img src="assets/06-extensions-tools.png" alt="Vera extensions and tools" width="260" /> |
+
+<div align="center">
+<img src="assets/07-browsing-data.png" alt="Vera browsing data settings" width="300" />
+</div>
 
 ## About Vera
 
@@ -67,16 +79,12 @@ The primary iOS build is automated in [GitHub Actions](https://github.com/theDev
 ```text
 .
 ├── .github/workflows/   # Automated build workflows
-├── assets/              # Vera app icon and artwork
+├── assets/              # App icon and actual app screenshots
 ├── App.js               # Main application
 ├── app.json             # Expo app configuration
 ├── package.json         # Project dependencies and scripts
 └── sidestore-source.json# SideStore source manifest
 ```
-
-## Screenshots and contributions
-
-When sharing screenshots, please use captures from the actual Vera app. Place them in a `screenshots/` folder and update the preview table above with their paths. Avoid mockups or unrelated images so the repository stays an accurate showcase of Vera.
 
 ---
 
