@@ -365,8 +365,13 @@ export default function App() {
   const palette = isLight
     ? { bg: '#f3f5f9', surface: '#ffffff', surfaceAlt: '#e9edf5', border: '#d5dce8', text: '#172033', muted: '#66738a', accent: '#4169d8', accentSoft: '#e5ebff', dock: 'rgba(255,255,255,0.97)' }
     : { bg: '#0b1220', surface: '#111b2c', surfaceAlt: '#172238', border: '#293752', text: '#f2f5fa', muted: '#93a2b8', accent: '#e8b76d', accentSoft: '#26354d', dock: 'rgba(23,34,56,0.97)' };
-  const glassAlpha = settings.glassLevel === 'clear' ? 0.42 : settings.glassLevel === 'solid' ? 0.94 : 0.72;
-  const glassSurface = isLight ? `rgba(255,255,255,${glassAlpha})` : `rgba(23,34,56,${glassAlpha})`;
+  const isVeloLayout = settings.homeLayout === 'velo' || (!settings.homeLayout && settings.veloHomeLayout);
+  const glassAlpha = settings.glassLevel === 'clear' ? 0.16 : settings.glassLevel === 'solid' ? 0.78 : 0.42;
+  const glassSurface = isLight ? `rgba(255,255,255,${glassAlpha})` : `rgba(13,30,34,${glassAlpha})`;
+  const veloGlassSurface = isLight
+    ? (settings.glassLevel === 'clear' ? 'rgba(255,255,255,0.24)' : settings.glassLevel === 'solid' ? 'rgba(255,255,255,0.84)' : 'rgba(255,255,255,0.48)')
+    : (settings.glassLevel === 'clear' ? 'rgba(7,25,28,0.24)' : settings.glassLevel === 'solid' ? 'rgba(7,25,28,0.84)' : 'rgba(7,25,28,0.48)');
+  const veloGlassBorder = isLight ? 'rgba(255,255,255,0.42)' : 'rgba(190,235,228,0.18)';
   const [passwordMenuOpen, setPasswordMenuOpen] = useState(false);
   const [extensionMenuOpen, setExtensionMenuOpen] = useState(false);
   const [background, setBackground] = useState(null);
@@ -724,7 +729,7 @@ export default function App() {
       const enabledPaths = QUICK_LINKS.filter((item) => settings.quickPaths && settings.quickPaths[item.title]);
       const greeting = new Date().getHours() < 12 ? 'Good morning' : new Date().getHours() < 18 ? 'Good afternoon' : 'Good evening';
       return (
-        <ScrollView style={[styles.homeScroll, { backgroundColor: palette.bg }]} contentContainerStyle={[styles.homeContent, styles.veloHomeContent]} keyboardShouldPersistTaps="handled">
+        <ScrollView style={[styles.homeScroll, { backgroundColor: 'transparent' }]} contentContainerStyle={[styles.homeContent, styles.veloHomeContent]} keyboardShouldPersistTaps="handled">
           <View style={styles.veloHero}>
             <View style={styles.veloMark}><Text style={styles.veloMarkText}>V</Text></View>
             <Text style={[styles.eyebrow, { marginTop: 14 }]}>YOUR SPACE ON THE WEB</Text>
@@ -732,7 +737,7 @@ export default function App() {
             <Text style={[styles.welcomeBody, { color: palette.muted, textAlign: 'center' }]}>A calmer place to search, read, and explore.</Text>
           </View>
 
-          {settings.showDailyVerse !== false && <View style={[styles.verseCard, styles.veloVerseCard, { backgroundColor: palette.surfaceAlt, borderColor: palette.border }]}>
+          {settings.showDailyVerse !== false && <View style={[styles.verseCard, styles.veloVerseCard, { backgroundColor: veloGlassSurface, borderColor: veloGlassBorder }]}>
             <View style={styles.verseTopline}>
               <View style={styles.verseLabelWrap}><Text style={styles.verseSpark}>✦</Text><Text style={styles.verseLabel}>TODAY’S VERSE</Text></View>
               <Text style={styles.verseReference}>{dailyVerse.reference.toUpperCase()}</Text>
@@ -760,7 +765,7 @@ export default function App() {
             {bookmarks.length === 0 ? (
               <Pressable onPress={() => openBookmarkEditor()} style={styles.bookmarkEmptyHome}><Text style={styles.bookmarkEmptyText}>＋ Add a bookmark to start your space</Text></Pressable>
             ) : bookmarks.slice(0, 4).map((item) => (
-              <Pressable key={item.id} onPress={() => openSavedPage(item)} style={[styles.savedHomeRow, styles.veloRecentRow, { backgroundColor: palette.surfaceAlt, borderColor: palette.border, borderWidth: 1 }]}>
+              <Pressable key={item.id} onPress={() => openSavedPage(item)} style={[styles.savedHomeRow, styles.veloRecentRow, { backgroundColor: veloGlassSurface, borderColor: veloGlassBorder, borderWidth: 1 }]}>
                 <Text style={styles.savedHomeMark}>◎</Text>
                 <View style={styles.savedHomeCopy}><Text numberOfLines={1} style={[styles.savedHomeTitle, { color: palette.text }]}>{item.name}</Text><Text numberOfLines={1} style={[styles.savedHomeUrl, { color: palette.muted }]}>{item.url.replace(/^https?:\/\//, '')}</Text></View>
                 <Text style={styles.quickArrow}>›</Text>
@@ -772,7 +777,7 @@ export default function App() {
             <View style={styles.veloSectionHeading}><Text style={[styles.sectionTitle, { color: palette.text }]}>Quick paths</Text></View>
             <View style={styles.veloShortcutGrid}>
               {enabledPaths.map((item) => (
-                <Pressable key={item.title} onPress={() => navigate(item.url)} style={({ pressed }) => [styles.veloShortcut, { backgroundColor: palette.surfaceAlt, borderColor: palette.border }, pressed && styles.pressed]}>
+                <Pressable key={item.title} onPress={() => navigate(item.url)} style={({ pressed }) => [styles.veloShortcut, { backgroundColor: veloGlassSurface, borderColor: veloGlassBorder }, pressed && styles.pressed]}>
                   <Text style={[styles.veloShortcutMark, { color: item.color }]}>{item.mark}</Text>
                   <Text style={[styles.veloShortcutTitle, { color: palette.text }]}>{item.title}</Text>
                 </Pressable>
@@ -920,10 +925,10 @@ export default function App() {
       imageStyle={styles.backgroundImageStyle}
       resizeMode="cover"
     >
-    <SafeAreaView style={[styles.safeRoot, { backgroundColor: palette.bg }, Platform.OS === 'android' && { paddingTop: NativeStatusBar.currentHeight || 0 }]}>
+    <SafeAreaView style={[styles.safeRoot, { backgroundColor: isVeloLayout && !url ? 'transparent' : palette.bg }, Platform.OS === 'android' && { paddingTop: NativeStatusBar.currentHeight || 0 }]}>
       <NativeStatusBar barStyle={isLight ? 'dark-content' : 'light-content'} backgroundColor={palette.bg} />
       {!url && settings.showHeader !== false && (
-      <View style={[styles.header, { backgroundColor: palette.bg }]}>
+      <View style={[styles.header, { backgroundColor: isVeloLayout ? 'transparent' : palette.bg }]}>
         <View style={styles.brand}>
           <Image source={require('./assets/icon.png')} style={styles.brandIcon} />
           <View>
@@ -1483,7 +1488,7 @@ const styles = StyleSheet.create({
   searchButtonText: { color: '#192235', fontWeight: '800', fontSize: 13 },
   navRow: { minHeight: 46, paddingHorizontal: 18, paddingVertical: 4, flexDirection: 'row', alignItems: 'center', gap: 8 },
   hiddenSettingsButton: { position: 'absolute', right: 12, bottom: 12, width: 42, height: 42, borderRadius: 21, alignItems: 'center', justifyContent: 'center', backgroundColor: '#172238', borderWidth: 1, borderColor: '#e6ad60' },
-  bottomDock: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', marginHorizontal: 22, marginTop: 5, marginBottom: Platform.OS === 'ios' ? 8 : 10, paddingHorizontal: 10, paddingVertical: 7, borderRadius: 23, backgroundColor: 'rgba(23, 34, 56, 0.97)', borderWidth: 1, borderColor: '#35435c', shadowColor: '#000', shadowOpacity: 0.22, shadowRadius: 12, shadowOffset: { width: 0, height: 4 }, elevation: 8 },
+  bottomDock: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', marginHorizontal: 22, marginTop: 5, marginBottom: Platform.OS === 'ios' ? 8 : 10, paddingHorizontal: 10, paddingVertical: 7, borderRadius: 23, backgroundColor: 'rgba(7, 25, 28, 0.78)', borderWidth: 1, borderColor: '#35435c', shadowColor: '#000', shadowOpacity: 0.22, shadowRadius: 12, shadowOffset: { width: 0, height: 4 }, elevation: 8 },
   bottomDockBrowsing: { marginHorizontal: 12, paddingHorizontal: 7, gap: 5 },
   bottomDockHome: { marginHorizontal: 14, marginTop: 10, marginBottom: Platform.OS === 'ios' ? 12 : 14, paddingHorizontal: 12, paddingVertical: 12, minHeight: 76, gap: 8, borderRadius: 26 },
   homeDockSearch: { flex: 1, minWidth: 0, height: 48, borderRadius: 18, paddingLeft: 12, paddingRight: 5 },
