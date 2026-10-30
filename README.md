@@ -1,6 +1,6 @@
-# Veyra Browser
+# Vera Browser
 
-Veyra is a cross-platform browser built with Expo, React Native WebView, and Electron.
+Vera is a cross-platform browser built with Expo, React Native WebView, and Electron.
 
 ## Platforms
 
@@ -33,6 +33,6 @@ npm run dist
 
 ## GitHub Actions
 
-Push changes to the app, configuration, assets, or desktop files to trigger the **Build Veyra IPA, APK and EXE** workflow. You can also run it manually from the repository's Actions tab. A successful run publishes all three artifacts in a GitHub Release.
+Push changes to the app, configuration, assets, or desktop files to trigger the **Build Vera IPA, APK and EXE** workflow. You can also run it manually from the repository's Actions tab. A successful run publishes all three artifacts in a GitHub Release.
 
 **Note:** The iOS workflow creates an unsigned IPA. It is not an App Store-signed app and may require SideStore signing/provisioning before installation.
