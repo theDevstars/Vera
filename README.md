@@ -1,38 +1,87 @@
-# Vera Browser
+<div align="center">
 
-Vera is a cross-platform browser built with Expo, React Native WebView, and Electron.
+<img src="assets/icon.png" alt="Vera app icon" width="120" />
 
-## Platforms
+# Vera
 
-- **iOS:** unsigned IPA built by GitHub Actions. Installing on an iPhone requires signing and provisioning; SideStore can be used with an appropriately prepared IPA.
-- **Android:** release APK built by GitHub Actions.
-- **Windows:** Electron EXE installer built by GitHub Actions.
+**A calmer way to browse.**
+
+A personal browser project focused on a clean browsing experience, useful shortcuts, saved pages, and privacy controls.
+
+[Latest Releases](https://github.com/theDevstars/Vera/releases) · [Builds](https://github.com/theDevstars/Vera/actions) · [SideStore Source](sidestore-source.json)
+
+</div>
+
+---
+
+## App preview
+
+> **Real app screenshots coming soon.** The repository currently contains the Vera app icon but not screenshots of the running app. We’ll add the actual iPhone home screen, webpage view, and settings screens here once they’re supplied, so the gallery accurately represents the app.
+
+| Home screen | Browsing | Settings |
+|:--:|:--:|:--:|
+| *Screenshot pending* | *Screenshot pending* | *Screenshot pending* |
+
+## About Vera
+
+Vera is built with Expo and React Native. The project is being developed with iPhone as the current release target, while keeping the project organized for future Android and Windows work.
+
+### Current release focus
+
+- **iPhone:** unsigned IPA produced through GitHub Actions on the `macos-26-intel` runner.
+- **SideStore:** source manifest is maintained in this repository.
+- **Android and Windows:** future build paths are kept separate from the current iOS release workflow.
+
+An unsigned IPA is not App Store-signed. Installation requires a compatible signing and provisioning method, such as SideStore.
+
+## Get Vera
+
+1. Open the [GitHub Releases](https://github.com/theDevstars/Vera/releases) page.
+2. Download the latest Vera IPA asset.
+3. Install it using your compatible signing workflow.
+
+To add Vera's SideStore source, use the raw manifest:
+
+[`sidestore-source.json`](https://raw.githubusercontent.com/theDevstars/Vera/main/sidestore-source.json)
 
 ## Build from source
 
-Requirements: Node.js 20+, and platform build tools (Xcode/CocoaPods for iOS, Java 17/Android SDK for Android, Windows for the EXE installer).
+Requirements: Node.js 20+ and the platform-specific build tools.
+
+Install JavaScript dependencies:
 
 ```bash
 npm install --legacy-peer-deps
 ```
 
-Mobile native projects are generated with:
+Generate the iOS native project:
 
 ```bash
-npx expo prebuild --platform ios
-npx expo prebuild --platform android
+npx expo prebuild --platform ios --no-install
 ```
 
-The Windows desktop app can be built with:
+The primary iOS build is automated in [GitHub Actions](https://github.com/theDevstars/Vera/actions).
 
-```bash
-cd desktop
-npm install
-npm run dist
+## Project structure
+
+```text
+.
+├── .github/workflows/   # Automated build workflows
+├── assets/              # Vera app icon and artwork
+├── App.js               # Main application
+├── app.json             # Expo app configuration
+├── package.json         # Project dependencies and scripts
+└── sidestore-source.json# SideStore source manifest
 ```
 
-## GitHub Actions
+## Screenshots and contributions
 
-Push changes to the app, configuration, assets, or desktop files to trigger the **Build Vera IPA, APK and EXE** workflow. You can also run it manually from the repository's Actions tab. A successful run publishes all three artifacts in a GitHub Release.
+When sharing screenshots, please use captures from the actual Vera app. Place them in a `screenshots/` folder and update the preview table above with their paths. Avoid mockups or unrelated images so the repository stays an accurate showcase of Vera.
 
-**Note:** The iOS workflow creates an unsigned IPA. It is not an App Store-signed app and may require SideStore signing/provisioning before installation.
+---
+
+<div align="center">
+
+**Vera** · Built with care by [theDevstars](https://github.com/theDevstars)
+
+</div>
