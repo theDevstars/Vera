@@ -1,0 +1,57 @@
+{
+  "expo": {
+    "name": "Veyra Browser",
+    "slug": "veyra-browser",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "icon": "./assets/icon.png",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.thedevstars.veyra",
+      "buildNumber": "1",
+      "infoPlist": {
+        "CFBundleDisplayName": "Veyra Browser",
+        "CFBundleURLTypes": [
+          {
+            "CFBundleURLName": "com.thedevstars.veyra.browser",
+            "CFBundleURLSchemes": [
+              "http",
+              "https"
+            ]
+          }
+        ]
+      }
+    },
+    "android": {
+      "package": "com.thedevstars.veyra",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "http"
+            },
+            {
+              "scheme": "https"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ],
+      "versionCode": 1,
+      "label": "Veyra Browser"
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Choose a wallpaper for Veyra Browser."
+        }
+      ]
+    ]
+  }
+}
