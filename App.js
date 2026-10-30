@@ -1106,7 +1106,7 @@ export default function App() {
               <Text style={[styles.settingsSectionTitle, { color: palette.accent }]}>Appearance & layout</Text>
               <Text style={[styles.settingsIntro, { color: palette.muted }]}>Tune the start page and bottom dock. Your choices are saved on this device.</Text>
               <View style={[styles.settingsCard, { backgroundColor: palette.surfaceAlt, borderColor: palette.border }]}>
-                <SettingRow title="Vela-inspired start page" detail="Use a modern dashboard layout with a centered welcome, shortcut tiles, privacy status, and recent saved pages." value={!!settings.veloHomeLayout} light={isLight} onValueChange={(value) => updateSetting('veloHomeLayout', value)} />
+                <SettingRow title="Velo-inspired start page" detail="Use a modern dashboard layout with a centered welcome, shortcut tiles, privacy status, and recent saved pages." value={!!settings.veloHomeLayout} light={isLight} onValueChange={(value) => updateSetting('veloHomeLayout', value)} />
                 <View style={styles.settingDivider} />
                 <SettingRow title="Compact start page" detail="Use a tighter home-screen layout with a smaller welcome heading." value={!!settings.compactHome} light={isLight} onValueChange={(value) => updateSetting('compactHome', value)} />
                 <View style={styles.settingDivider} />
