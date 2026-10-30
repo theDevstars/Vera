@@ -1,20 +1,20 @@
 {
   "expo": {
-    "name": "Veyra Browser",
-    "slug": "veyra-browser",
+    "name": "Vera Browser",
+    "slug": "vera-browser",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
     "icon": "./assets/icon.png",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.thedevstars.veyra",
+      "bundleIdentifier": "com.thedevstars.vera",
       "buildNumber": "1",
       "infoPlist": {
-        "CFBundleDisplayName": "Veyra Browser",
+        "CFBundleDisplayName": "Vera Browser",
         "CFBundleURLTypes": [
           {
-            "CFBundleURLName": "com.thedevstars.veyra.browser",
+            "CFBundleURLName": "com.thedevstars.vera.browser",
             "CFBundleURLSchemes": [
               "http",
               "https"
@@ -24,7 +24,7 @@
       }
     },
     "android": {
-      "package": "com.thedevstars.veyra",
+      "package": "com.thedevstars.vera",
       "intentFilters": [
         {
           "action": "VIEW",
@@ -43,13 +43,13 @@
         }
       ],
       "versionCode": 1,
-      "label": "Veyra Browser"
+      "label": "Vera Browser"
     },
     "plugins": [
       [
         "expo-image-picker",
         {
-          "photosPermission": "Choose a wallpaper for Veyra Browser."
+          "photosPermission": "Choose a wallpaper for Vera Browser."
         }
       ]
     ]
