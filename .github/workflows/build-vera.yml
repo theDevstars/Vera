@@ -80,157 +80,45 @@ jobs:
           test -s Vera-unsigned.ipa
       - uses: actions/upload-artifact@v4
         with:
-          name: Vera-unsigned-IPA
-          path: Vera-unsigned.ipa
-          if-no-files-found: error
-          retention-days: 7
-
-  build-android:
-    name: Build Android APK
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 17
-      - name: Verify app configuration
-        run: |
-          test -f app.json || { echo "app.json is missing"; exit 1; }
-          test -f App.js || { echo "App.js is missing"; exit 1; }
-          node -e "const c=require('./app.json').expo; if(!c.android?.package) throw new Error('android.package is missing in app.json')"
-      - name: Install dependencies
-        run: npm install --legacy-peer-deps
-      - name: Generate Vera app icon PNG
-        run: npx --yes sharp-cli -i assets/icon.svg -o assets/icon.png resize 1024 1024
-      - name: Set native app version
-        env:
-          BUILD_NUMBER: ${{ github.run_number }}
-        run: |
-          node <<'NODE'
-          const fs = require('fs');
-          const p = 'app.json';
-          const config = JSON.parse(fs.readFileSync(p, 'utf8'));
-          const build = process.env.BUILD_NUMBER;
-          config.expo.version = '1.0.' + build;
-          config.expo.ios = { ...config.expo.ios, buildNumber: String(build) };
-          config.expo.android = { ...config.expo.android, versionCode: Number(build) };
-          fs.writeFileSync(p, JSON.stringify(config, null, 2) + '\n');
-          NODE
-      - name: Generate Android project
-        run: npx expo prebuild --platform android --non-interactive --no-install
-      - name: Build APK
-        run: |
-          cd android
-          chmod +x gradlew
-          ./gradlew assembleRelease
-      - uses: actions/upload-artifact@v4
-        with:
-          name: Vera-APK
-          path: android/app/build/outputs/apk/release/*.apk
-          if-no-files-found: error
-          retention-days: 7
-
-  build-windows:
-    name: Build Windows EXE
-    runs-on: windows-latest
-    timeout-minutes: 45
-    outputs:
-      has_desktop: ${{ steps.detect.outputs.has_desktop }}
-    steps:
-      - uses: actions/checkout@v4
-      - name: Detect desktop project
-        id: detect
-        shell: pwsh
-        run: |
-          if (Test-Path "desktop/package.json") {
-            "has_desktop=true" >> $env:GITHUB_OUTPUT
-          } else {
-            "has_desktop=false" >> $env:GITHUB_OUTPUT
-            Write-Host "No desktop/package.json found; skipping EXE build."
-          }
-      - name: Set up Node
-        if: ${{ steps.detect.outputs.has_desktop == 'true' }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - name: Install desktop dependencies
-        if: ${{ steps.detect.outputs.has_desktop == 'true' }}
-        working-directory: desktop
-        run: npm install
-      - name: Set Windows installer version
-        if: ${{ steps.detect.outputs.has_desktop == 'true' }}
-        working-directory: desktop
-        env:
-          RELEASE_VERSION: 1.0.${{ github.run_number }}
-        run: |
-          node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('package.json','utf8'));p.version=process.env.RELEASE_VERSION;fs.writeFileSync('package.json',JSON.stringify(p,null,2)+'\n')"
-      - name: Build Windows installer
-        if: ${{ steps.detect.outputs.has_desktop == 'true' }}
-        working-directory: desktop
-        run: npm run dist
-      - uses: actions/upload-artifact@v4
-        if: ${{ steps.detect.outputs.has_desktop == 'true' }}
-        with:
-          name: Vera-Windows-EXE
-          path: desktop/dist/*.exe
+          name: Vera-iOS
+          path: |
+            Vera-unsigned.ipa
+            assets/icon.png
           if-no-files-found: error
           retention-days: 7
 
   create-release:
-    name: Publish Vera release
+    name: Publish Vera iOS release
     runs-on: ubuntu-latest
-    needs: [build-ios, build-android, build-windows]
-    if: ${{ always() && needs.build-ios.result == 'success' && needs.build-android.result == 'success' && (needs.build-windows.result == 'success' || needs.build-windows.result == 'skipped') }}
+    needs: [build-ios]
+    if: ${{ needs.build-ios.result == 'success' }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - name: Generate and commit the SideStore icon
-        run: |
-          npx --yes sharp-cli -i assets/icon.svg -o assets/icon.png resize 1024 1024
-      - name: Download IPA
+      - name: Download iOS IPA and icon
         uses: actions/download-artifact@v4
         with:
-          name: Vera-unsigned-IPA
+          name: Vera-iOS
           path: release-files
-      - name: Download APK
-        uses: actions/download-artifact@v4
-        with:
-          name: Vera-APK
-          path: release-files
-      - name: Download Windows EXE when available
-        if: ${{ needs.build-windows.outputs.has_desktop == 'true' }}
-        uses: actions/download-artifact@v4
-        with:
-          name: Vera-Windows-EXE
-          path: release-files
-      - name: Publish GitHub Release
+      - name: Publish Vera IPA release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: vera-v1.0.${{ github.run_number }}
           name: Vera v1.0.${{ github.run_number }}
           body: |
-            Vera Browser release.
+            Vera Browser for iPhone and iPad.
 
-            Included downloads depend on the source files present in this repository:
-            - Android APK for Android devices.
-            - Unsigned iOS IPA. iPhone installation requires appropriate signing/provisioning.
-            - Windows EXE when the desktop/ Electron project is present.
+            This is an unsigned iOS IPA. Installation requires signing/provisioning through a supported installer.
           prerelease: false
           make_latest: true
-          files: release-files/*
+          files: |
+            release-files/Vera-unsigned.ipa
       - name: Update SideStore source in this repository
         env:
           BUILD_NUMBER: ${{ github.run_number }}
           RELEASE_TAG: vera-v1.0.${{ github.run_number }}
         run: |
           set -euo pipefail
+          cp release-files/icon.png assets/icon.png
           node <<'NODE'
           const fs = require('fs');
           const config = JSON.parse(fs.readFileSync('app.json', 'utf8')).expo;
@@ -256,7 +144,7 @@ jobs:
             version: '1.0.' + build,
             buildVersion: Number(build),
             date: new Date().toISOString(),
-            localizedDescription: 'Vera Browser release.',
+            localizedDescription: 'Vera Browser for iPhone and iPad.',
             downloadURL: releasePath,
             size: fs.statSync('release-files/Vera-unsigned.ipa').size
           }, ...(app.versions || []).filter(v => Number(v.buildVersion) !== Number(build))];
@@ -265,5 +153,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add assets/icon.png sidestore-source.json
-          git commit -m "Publish Vera SideStore source for $RELEASE_TAG"
+          git commit -m "Publish Vera iOS SideStore source for $RELEASE_TAG"
           git push
