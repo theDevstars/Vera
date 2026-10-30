@@ -28,7 +28,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
       - name: Verify app configuration
         run: |
           test -f app.json || { echo "app.json is missing"; exit 1; }
@@ -93,7 +92,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -143,8 +141,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
-          cache-dependency-path: desktop/package-lock.json
       - name: Install desktop dependencies
         working-directory: desktop
         run: npm install
@@ -236,7 +232,7 @@ jobs:
             localizedDescription: 'Vera Browser release.',
             downloadURL: releasePath,
             size: fs.statSync('release-files/Vera-unsigned.ipa').size
-          }, ...(app.versions || []).filter(v => Number(v.buildVersion) > Number(build))];
+          }, ...(app.versions || []).filter(v => Number(v.buildVersion) !== Number(build))];
           fs.writeFileSync(sourcePath, JSON.stringify(source, null, 2) + '\n');
           NODE
           FILE_SHA=$(gh api "repos/$GITHUB_REPOSITORY/contents/sidestore-source.json" --jq .sha)
