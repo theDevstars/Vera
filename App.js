@@ -702,8 +702,25 @@ export default function App() {
     ]);
   };
 
+  const renderCompactHome = () => (
+    <ScrollView style={[styles.homeScroll, { backgroundColor: palette.bg }]} contentContainerStyle={styles.compactModeContent} keyboardShouldPersistTaps="handled">
+      <View style={styles.compactModeBrand}><Text style={[styles.compactModeEyebrow,{color:palette.muted}]}>VERA</Text><Text style={[styles.compactModeTitle,{color:palette.text}]}>A quieter place to begin.</Text></View>
+      <View style={[styles.compactModeSearch,{backgroundColor:glassSurface,borderColor:palette.border}]}>
+        <Text style={{color:palette.muted,fontSize:20}}>⌕</Text>
+        <TextInput value={address} onChangeText={setAddress} onSubmitEditing={()=>navigate()} autoCapitalize="none" autoCorrect={false} keyboardType={Platform.OS === 'ios' ? 'web-search' : 'default'} returnKeyType="search" placeholder="Search or enter a website" placeholderTextColor={palette.muted} style={[styles.compactModeInput,{color:palette.text}]} accessibilityLabel="Search or enter a website"/>
+        <Pressable onPress={()=>navigate()} style={[styles.compactModeGo,{backgroundColor:palette.accent}]}><Text style={{color:isLight?'#fff':'#172033',fontWeight:'800'}}>Go</Text></Pressable>
+      </View>
+      {settings.showDailyVerse !== false && <View style={[styles.compactModeVerse,{backgroundColor:palette.surfaceAlt,borderColor:palette.border}]}>
+        <Text style={styles.verseLabel}>✦  TODAY’S VERSE</Text>
+        <Text style={[styles.verseText,{color:palette.text}]}>{verseText}</Text>
+        <Text style={[styles.verseReference,{marginTop:8}]}>{dailyVerse.reference.toUpperCase()}</Text>
+      </View>}
+    </ScrollView>
+  );
+
   const renderHome = () => {
-    if (settings.veloHomeLayout) {
+    if (settings.homeLayout === 'compact') return renderCompactHome();
+    if (settings.homeLayout === 'velo' || (!settings.homeLayout && settings.veloHomeLayout)) {
       const enabledPaths = QUICK_LINKS.filter((item) => settings.quickPaths && settings.quickPaths[item.title]);
       const greeting = new Date().getHours() < 12 ? 'Good morning' : new Date().getHours() < 18 ? 'Good afternoon' : 'Good evening';
       return (
@@ -1182,9 +1199,18 @@ export default function App() {
               <Text style={[styles.settingsSectionTitle, { color: palette.accent }]}>Appearance & layout</Text>
               <Text style={[styles.settingsIntro, { color: palette.muted }]}>Tune the start page and bottom dock. Your choices are saved on this device.</Text>
               <View style={[styles.settingsCard, { backgroundColor: palette.surfaceAlt, borderColor: palette.border }]}>
-                <SettingRow title="Velo-inspired start page" detail="Use the modern dashboard layout with shortcut tiles and saved pages." value={!!settings.veloHomeLayout} light={isLight} onValueChange={(value) => updateSetting('veloHomeLayout', value)} />
-                <View style={styles.settingDivider} />
-                <SettingRow title="Original Vera interface (OGUI)" detail="Switch back to Vera’s classic home-screen layout." value={!settings.veloHomeLayout} light={isLight} onValueChange={(value) => updateSetting('veloHomeLayout', !value)} />
+                <View style={{paddingHorizontal:14,paddingVertical:13}}>
+                  <Text style={[styles.settingTitle,{color:palette.text,marginBottom:5}]}>Start page style</Text>
+                  <Text style={[styles.settingDetail,{color:palette.muted,marginBottom:12}]}>Choose your browsing experience.</Text>
+                  <View style={{flexDirection:'row',gap:7}}>
+                    {[{id:'ogui',name:'OGUI'},{id:'velo',name:'Velo'},{id:'compact',name:'Compact'}].map((mode)=>(
+                      <Pressable key={mode.id} onPress={()=>updateSetting('homeLayout',mode.id)} style={{flex:1,minHeight:43,alignItems:'center',justifyContent:'center',borderRadius:12,borderWidth:1,borderColor:(settings.homeLayout || (settings.veloHomeLayout?'velo':'ogui'))===mode.id?palette.accent:palette.border,backgroundColor:(settings.homeLayout || (settings.veloHomeLayout?'velo':'ogui'))===mode.id?palette.accentSoft:palette.surface}}>
+                        <Text style={{color:palette.text,fontSize:12,fontWeight:'800'}}>{mode.name}</Text>
+                      </Pressable>
+                    ))}
+                  </View>
+                  <Text style={[styles.settingDetail,{color:palette.muted,marginTop:9}]}>{settings.homeLayout==='compact'?'Minimal: just search and today’s verse.':settings.homeLayout==='velo'?'A curated, ready-made dashboard.':'Classic Vera with detailed layout customization.'}</Text>
+                </View>
                 <View style={styles.settingDivider} />
                 <View style={{ paddingHorizontal: 14, paddingVertical: 12 }}>
                   <Text style={[styles.settingTitle, { color: isLight ? '#172033' : palette.text }]}>Glass transparency</Text>
@@ -1460,6 +1486,14 @@ const styles = StyleSheet.create({
   searchHintText: { color: '#8190a8', fontSize: 12 },
   progress: { height: 3 },
   homeScroll: { flex: 1 },
+  compactModeContent: { flexGrow: 1, justifyContent: 'center', paddingHorizontal: 22, paddingTop: 24, paddingBottom: 32 },
+  compactModeBrand: { marginBottom: 24, paddingHorizontal: 3 },
+  compactModeEyebrow: { fontSize: 11, fontWeight: '900', letterSpacing: 2, marginBottom: 8 },
+  compactModeTitle: { fontSize: 25, fontWeight: '800', letterSpacing: -0.6 },
+  compactModeSearch: { minHeight: 58, borderRadius: 19, borderWidth: 1, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 15, gap: 10 },
+  compactModeInput: { flex: 1, minWidth: 0, fontSize: 15, paddingVertical: 12 },
+  compactModeGo: { borderRadius: 12, paddingHorizontal: 14, paddingVertical: 9 },
+  compactModeVerse: { marginTop: 24, padding: 18, borderRadius: 20, borderWidth: 1 },
   homeContent: { paddingHorizontal: 18, paddingBottom: 30 },
   homeContentCompact: { paddingHorizontal: 13, paddingBottom: 18 },
   veloHomeContent: { paddingTop: 18 },
