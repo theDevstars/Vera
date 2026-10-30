@@ -4,7 +4,7 @@
   "description": "Vera Browser for iPhone and iPad.",
   "iconURL": "https://raw.githubusercontent.com/theDevstars/Vera/main/assets/icon.png",
   "website": "https://github.com/theDevstars/Vera",
-  "tintColor": "#DDAF64",
+  "tintColor": "#4D70FF",
   "apps": [
     {
       "name": "Vera",
@@ -13,7 +13,7 @@
       "subtitle": "Browse with a little more calm",
       "localizedDescription": "Search the web, save pages, and use built-in privacy controls.",
       "iconURL": "https://raw.githubusercontent.com/theDevstars/Vera/main/assets/icon.png",
-      "tintColor": "#DDAF64",
+      "tintColor": "#4D70FF",
       "category": "utilities",
       "versions": [],
       "appPermissions": {
