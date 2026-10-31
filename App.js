@@ -366,11 +366,11 @@ export default function App() {
     ? { bg: '#f3f5f9', surface: '#ffffff', surfaceAlt: '#e9edf5', border: '#d5dce8', text: '#172033', muted: '#66738a', accent: '#4169d8', accentSoft: '#e5ebff', dock: 'rgba(255,255,255,0.97)' }
     : { bg: '#0b1220', surface: '#111b2c', surfaceAlt: '#172238', border: '#293752', text: '#f2f5fa', muted: '#93a2b8', accent: '#e8b76d', accentSoft: '#26354d', dock: 'rgba(23,34,56,0.97)' };
   const isVeloLayout = settings.homeLayout === 'velo' || (!settings.homeLayout && settings.veloHomeLayout);
-  const glassAlpha = settings.glassLevel === 'clear' ? 0.16 : settings.glassLevel === 'solid' ? 0.78 : 0.42;
+  const glassAlpha = settings.glassLevel === 'clear' ? 0.04 : settings.glassLevel === 'solid' ? 0.78 : 0.42;
   const glassSurface = isLight ? `rgba(255,255,255,${glassAlpha})` : `rgba(13,30,34,${glassAlpha})`;
   const veloGlassSurface = isLight
-    ? (settings.glassLevel === 'clear' ? 'rgba(255,255,255,0.24)' : settings.glassLevel === 'solid' ? 'rgba(255,255,255,0.84)' : 'rgba(255,255,255,0.48)')
-    : (settings.glassLevel === 'clear' ? 'rgba(7,25,28,0.24)' : settings.glassLevel === 'solid' ? 'rgba(7,25,28,0.84)' : 'rgba(7,25,28,0.48)');
+    ? (settings.glassLevel === 'clear' ? 'rgba(255,255,255,0.06)' : settings.glassLevel === 'solid' ? 'rgba(255,255,255,0.84)' : 'rgba(255,255,255,0.38)')
+    : (settings.glassLevel === 'clear' ? 'rgba(7,25,28,0.06)' : settings.glassLevel === 'solid' ? 'rgba(7,25,28,0.84)' : 'rgba(7,25,28,0.38)');
   const veloGlassBorder = isLight ? 'rgba(255,255,255,0.42)' : 'rgba(190,235,228,0.18)';
   const [passwordMenuOpen, setPasswordMenuOpen] = useState(false);
   const [extensionMenuOpen, setExtensionMenuOpen] = useState(false);
@@ -748,7 +748,7 @@ export default function App() {
             </Pressable>
           </View>}
 
-          {settings.showPrivacySnapshot !== false && <View style={[styles.privacySnapshot, styles.veloPrivacyCard]}>
+          {settings.showPrivacySnapshot !== false && <View style={[styles.privacySnapshot, styles.veloPrivacyCard, { backgroundColor: veloGlassSurface, borderColor: veloGlassBorder, borderWidth: 1 }]}>
             <View style={styles.privacySnapshotIcon}><Text style={styles.privacySnapshotGlyph}>✦</Text></View>
             <View style={styles.privacySnapshotCopy}>
               <Text style={styles.privacySnapshotTitle}>Your privacy, at a glance</Text>
@@ -795,7 +795,7 @@ export default function App() {
               const added = Boolean(savedApp);
               return (
                 <Pressable key={app.name} onPress={() => added ? openSavedPage(savedApp) : addWebApp(app)} style={({ pressed }) => [styles.webAppTile, { backgroundColor: palette.surfaceAlt, borderColor: palette.border }, pressed && styles.pressed]}>
-                  <View style={[styles.webAppMark, { backgroundColor: app.color + '24' }]}><Text style={[styles.webAppMarkText, { color: app.color }]}>{app.mark}</Text></View>
+                  <View style={[styles.webAppMark, { backgroundColor: settings.glassLevel === 'clear' ? app.color + '10' : app.color + '24' }]}><Text style={[styles.webAppMarkText, { color: app.color }]}>{app.mark}</Text></View>
                   <Text numberOfLines={1} style={[styles.webAppName, { color: palette.text }]}>{app.name}</Text>
                   <Text style={[styles.webAppAction, { color: palette.accent }]}>{added ? 'Added · Open' : '+ Add'}</Text>
                 </Pressable>
@@ -859,23 +859,6 @@ export default function App() {
           </View>
         </>
       )}
-
-      <View style={styles.sectionHeading}>
-        <Text style={[styles.sectionTitle, { color: palette.text }]}>Web apps</Text>
-        <Text style={[styles.sectionHint, { color: palette.muted }]}>Add your favorites</Text>
-      </View>
-      <View style={styles.webAppGrid}>
-        {WEB_APPS.map((app) => {
-          const added = bookmarks.some((item) => item.url.replace(/\/$/, '') === app.url.replace(/\/$/, ''));
-          return (
-            <Pressable key={app.name} onPress={() => added ? openSavedPage(bookmarks.find((item) => item.url.replace(/\/$/, '') === app.url.replace(/\/$/, ''))) : addWebApp(app)} style={({ pressed }) => [styles.webAppTile, { backgroundColor: palette.surfaceAlt, borderColor: palette.border }, pressed && styles.pressed]}>
-              <View style={[styles.webAppMark, { backgroundColor: app.color + '24' }]}><Text style={[styles.webAppMarkText, { color: app.color }]}>{app.mark}</Text></View>
-              <Text numberOfLines={1} style={[styles.webAppName, { color: palette.text }]}>{app.name}</Text>
-              <Text style={[styles.webAppAction, { color: palette.accent }]}>{added ? 'Added · Open' : '+ Add'}</Text>
-            </Pressable>
-          );
-        })}
-      </View>
 
       {settings.showPrivacySnapshot !== false && <View style={styles.privacySnapshot}>
         <View style={styles.privacySnapshotIcon}><Text style={styles.privacySnapshotGlyph}>✦</Text></View>
@@ -989,7 +972,7 @@ export default function App() {
           <Text style={styles.dockGlyph}>⌂</Text>
         </Pressable>
         {url ? (
-          <View style={[styles.safariAddressBar, { backgroundColor: glassSurface, borderColor: palette.border }]}>
+          <View style={[styles.safariAddressBar, { backgroundColor: isVeloLayout ? veloGlassSurface : glassSurface, borderColor: isVeloLayout ? veloGlassBorder : palette.border }]}>
             <Text style={styles.safariLock}>⌑</Text>
             <TextInput
               value={address}
@@ -1010,7 +993,7 @@ export default function App() {
             </Pressable>
           </View>
         ) : (
-          <View style={[styles.safariAddressBar, styles.homeDockSearch, { backgroundColor: glassSurface, borderColor: palette.border }]}>
+          <View style={[styles.safariAddressBar, styles.homeDockSearch, { backgroundColor: isVeloLayout ? veloGlassSurface : glassSurface, borderColor: isVeloLayout ? veloGlassBorder : palette.border }]}>
             <Text style={styles.safariLock}>⌕</Text>
             <TextInput
               value={address}
