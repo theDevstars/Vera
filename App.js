@@ -322,13 +322,13 @@ function makeTarget(value, engine, preferHttps) {
   return (SEARCH_ENGINES[engine] || SEARCH_ENGINES.DuckDuckGo) + encodeURIComponent(input);
 }
 
-function IconButton({ label, glyph, onPress, secondary = false }) {
+function IconButton({ label, glyph, onPress, secondary = false, velo = false }) {
   return (
     <Pressable
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={label}
-      style={({ pressed }) => [styles.iconButton, secondary && styles.iconButtonSecondary, pressed && styles.pressed]}
+      style={({ pressed }) => [styles.iconButton, secondary && styles.iconButtonSecondary, velo && styles.veloClearButton, pressed && styles.pressed]}
     >
       <Text style={[styles.iconGlyph, secondary && styles.iconGlyphSecondary]}>{glyph}</Text>
     </Pressable>
@@ -760,16 +760,16 @@ export default function App() {
               <Text style={styles.privacySnapshotTitle}>Your privacy, at a glance</Text>
               <Text style={styles.privacySnapshotBody}>{settings.privateBrowsing ? 'Private browsing is on.' : 'Private browsing is off.'} {settings.blockThirdPartyCookies ? 'Third-party cookies are blocked.' : 'Third-party cookies are allowed.'}</Text>
             </View>
-            <Pressable onPress={() => { setSettingsVisible(true); setSettingsCategory('Security & privacy'); }} style={styles.privacySnapshotAction}><Text style={styles.privacySnapshotActionText}>Review</Text></Pressable>
+            <Pressable onPress={() => { setSettingsVisible(true); setSettingsCategory('Security & privacy'); }} style={[styles.privacySnapshotAction, isVeloLayout && styles.veloClearButton]}><Text style={styles.privacySnapshotActionText}>Review</Text></Pressable>
           </View>}
 
           {settings.showBookmarksSection !== false && <>
             <View style={styles.sectionHeading}>
               <Text style={[styles.sectionTitle, { color: palette.text }]}>Your bookmarks</Text>
-              <Pressable onPress={() => setBookmarksVisible(true)}><Text style={styles.seeAll}>MANAGE</Text></Pressable>
+              <Pressable onPress={() => setBookmarksVisible(true)} style={isVeloLayout && styles.veloClearButton}><Text style={styles.seeAll}>MANAGE</Text></Pressable>
             </View>
             {bookmarks.length === 0 ? (
-              <Pressable onPress={() => openBookmarkEditor()} style={styles.bookmarkEmptyHome}><Text style={styles.bookmarkEmptyText}>＋ Add a bookmark to start your space</Text></Pressable>
+              <Pressable onPress={() => openBookmarkEditor()} style={[styles.bookmarkEmptyHome, isVeloLayout && styles.veloClearButton]}><Text style={styles.bookmarkEmptyText}>＋ Add a bookmark to start your space</Text></Pressable>
             ) : bookmarks.slice(0, 4).map((item) => (
               <Pressable key={item.id} onPress={() => openSavedPage(item)} style={[styles.savedHomeRow, styles.veloRecentRow, { backgroundColor: veloGlassSurface, borderColor: veloGlassBorder, borderWidth: 1 }]}>
                 <Text style={styles.savedHomeMark}>◎</Text>
@@ -801,8 +801,8 @@ export default function App() {
                 const savedApp = bookmarks.find((item) => (item.url.endsWith('/') ? item.url.slice(0, -1) : item.url) === (app.url.endsWith('/') ? app.url.slice(0, -1) : app.url));
                 const added = Boolean(savedApp);
                 return (
-                  <Pressable key={app.name} onPress={() => added ? openSavedPage(savedApp) : addWebApp(app)} style={({ pressed }) => [styles.webAppTile, { backgroundColor: palette.surfaceAlt, borderColor: palette.border }, pressed && styles.pressed]}>
-                    <View style={[styles.webAppMark, { backgroundColor: settings.glassLevel === 'clear' ? app.color + '10' : app.color + '24' }]}><Text style={[styles.webAppMarkText, { color: app.color }]}>{app.mark}</Text></View>
+                  <Pressable key={app.name} onPress={() => added ? openSavedPage(savedApp) : addWebApp(app)} style={({ pressed }) => [styles.webAppTile, isVeloLayout ? styles.veloClearButton : { backgroundColor: palette.surfaceAlt, borderColor: palette.border }, pressed && styles.pressed]}>
+                    <View style={[styles.webAppMark, { backgroundColor: isVeloLayout ? 'rgba(255,255,255,0.035)' : (settings.glassLevel === 'clear' ? app.color + '10' : app.color + '24'), borderWidth: isVeloLayout ? 1 : 0, borderColor: isVeloLayout ? veloGlassBorder : 'transparent' }]}><Text style={[styles.webAppMarkText, { color: app.color }]}>{app.mark}</Text></View>
                     <Text numberOfLines={1} style={[styles.webAppName, { color: palette.text }]}>{app.name}</Text>
                     <Text style={[styles.webAppAction, { color: palette.accent }]}>{added ? 'Added · Open' : '+ Add'}</Text>
                   </Pressable>
@@ -932,11 +932,11 @@ export default function App() {
 
       {!url && settings.showNavigationRow !== false && (
       <View style={styles.navRow}>
-        <IconButton label="Go back" glyph="‹" onPress={() => web.current?.goBack()} secondary />
-        <IconButton label="Go forward" glyph="›" onPress={() => web.current?.goForward()} secondary />
-        <IconButton label="Home" glyph="⌂" onPress={goHome} secondary />
+        <IconButton label="Go back" glyph="‹" onPress={() => web.current?.goBack()} secondary velo={isVeloLayout} />
+        <IconButton label="Go forward" glyph="›" onPress={() => web.current?.goForward()} secondary velo={isVeloLayout} />
+        <IconButton label="Home" glyph="⌂" onPress={goHome} secondary velo={isVeloLayout} />
         {url ? (
-          <Pressable onPress={() => openBookmarkEditor()} style={({ pressed }) => [styles.saveCurrentButton, pressed && styles.pressed]}>
+          <Pressable onPress={() => openBookmarkEditor()} style={({ pressed }) => [styles.saveCurrentButton, isVeloLayout && styles.veloClearButton, pressed && styles.pressed]}>
             <Text style={styles.saveCurrentGlyph}>＋</Text>
             <Text style={styles.saveCurrentText}>Save page</Text>
           </Pressable>
@@ -996,7 +996,7 @@ export default function App() {
               style={styles.safariAddressInput}
               accessibilityLabel="Search or enter a website"
             />
-            <Pressable onPress={() => web.current?.reload()} style={styles.safariReload} accessibilityRole="button" accessibilityLabel="Reload page">
+            <Pressable onPress={() => web.current?.reload()} style={[styles.safariReload, isVeloLayout && styles.veloClearButton]} accessibilityRole="button" accessibilityLabel="Reload page">
               <Text style={styles.safariReloadGlyph}>↻</Text>
             </Pressable>
           </View>
@@ -1481,6 +1481,7 @@ const styles = StyleSheet.create({
   themeChoiceGlyph: { fontSize: 23, fontWeight: '700' },
   themeChoiceText: { fontSize: 14, fontWeight: '800' },
   themeChoiceCheck: { marginLeft: 'auto', color: '#e8b76d', fontWeight: '900', fontSize: 16 },
+  veloClearButton: { backgroundColor: 'rgba(255,255,255,0.045)', borderColor: 'rgba(210,245,238,0.22)', borderWidth: 1, shadowOpacity: 0.08, elevation: 1 },
   dockActionTile: { minWidth: 66, minHeight: 46, flexDirection: 'row', gap: 6, borderRadius: 16, paddingHorizontal: 10, paddingVertical: 7, borderWidth: 1, shadowColor: '#000', shadowOpacity: 0.12, shadowOffset: { width: 0, height: 2 }, shadowRadius: 7, elevation: 2 },
   dockActionGlyph: { fontSize: 18, lineHeight: 22, fontWeight: '800' },
   dockActionLabel: { fontSize: 10, lineHeight: 13, fontWeight: '800', letterSpacing: 0.1 },
