@@ -785,23 +785,25 @@ export default function App() {
             </View>
           </>}
 
-          <View style={styles.sectionHeading}>
-            <Text style={[styles.sectionTitle, { color: palette.text }]}>Apps & websites</Text>
-            <Text style={[styles.sectionHint, { color: palette.muted }]}>Your mobile web launcher</Text>
-          </View>
-          <View style={styles.webAppGrid}>
-            {WEB_APPS.map((app) => {
-              const savedApp = bookmarks.find((item) => (item.url.endsWith('/') ? item.url.slice(0, -1) : item.url) === (app.url.endsWith('/') ? app.url.slice(0, -1) : app.url));
-              const added = Boolean(savedApp);
-              return (
-                <Pressable key={app.name} onPress={() => added ? openSavedPage(savedApp) : addWebApp(app)} style={({ pressed }) => [styles.webAppTile, { backgroundColor: palette.surfaceAlt, borderColor: palette.border }, pressed && styles.pressed]}>
-                  <View style={[styles.webAppMark, { backgroundColor: settings.glassLevel === 'clear' ? app.color + '10' : app.color + '24' }]}><Text style={[styles.webAppMarkText, { color: app.color }]}>{app.mark}</Text></View>
-                  <Text numberOfLines={1} style={[styles.webAppName, { color: palette.text }]}>{app.name}</Text>
-                  <Text style={[styles.webAppAction, { color: palette.accent }]}>{added ? 'Added · Open' : '+ Add'}</Text>
-                </Pressable>
-              );
-            })}
-          </View>
+          {settings.showWebApps !== false && WEB_APPS.some((app) => settings.webApps?.[app.name] !== false) && <>
+            <View style={styles.sectionHeading}>
+              <Text style={[styles.sectionTitle, { color: palette.text }]}>Apps & websites</Text>
+              <Text style={[styles.sectionHint, { color: palette.muted }]}>Your mobile web launcher</Text>
+            </View>
+            <View style={styles.webAppGrid}>
+              {WEB_APPS.filter((app) => settings.webApps?.[app.name] !== false).map((app) => {
+                const savedApp = bookmarks.find((item) => (item.url.endsWith('/') ? item.url.slice(0, -1) : item.url) === (app.url.endsWith('/') ? app.url.slice(0, -1) : app.url));
+                const added = Boolean(savedApp);
+                return (
+                  <Pressable key={app.name} onPress={() => added ? openSavedPage(savedApp) : addWebApp(app)} style={({ pressed }) => [styles.webAppTile, { backgroundColor: palette.surfaceAlt, borderColor: palette.border }, pressed && styles.pressed]}>
+                    <View style={[styles.webAppMark, { backgroundColor: settings.glassLevel === 'clear' ? app.color + '10' : app.color + '24' }]}><Text style={[styles.webAppMarkText, { color: app.color }]}>{app.mark}</Text></View>
+                    <Text numberOfLines={1} style={[styles.webAppName, { color: palette.text }]}>{app.name}</Text>
+                    <Text style={[styles.webAppAction, { color: palette.accent }]}>{added ? 'Added · Open' : '+ Add'}</Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          </>}
 
           {settings.showSearchFooter !== false && <Text style={styles.footerNote}>VERA · SEARCH WITH {settings.searchEngine.toUpperCase()}</Text>}
         </ScrollView>
@@ -1137,6 +1139,7 @@ export default function App() {
               <View style={styles.settingsCategoryList}>
                 {[
                   { title: 'Customization', detail: 'Themes, home screen, dock, layout and Bible display', icon: '✦' },
+                  { title: 'Web apps', detail: 'Show, hide, and choose which app shortcuts appear in Velo', icon: '▦' },
                   { title: 'Search', detail: 'Choose your search engine and search behavior', icon: '⌕' },
                   { title: 'Extensions & tools', detail: 'Choose web tools and extension directories', icon: '⌘' },
                   { title: 'Security & privacy', detail: 'Tracking protection, cookies and secure browsing', icon: '◈' },
@@ -1300,6 +1303,26 @@ export default function App() {
               </View>
 
                 </>)}
+                {settingsCategory === 'Web apps' && <>
+                  <Text style={[styles.settingsSectionTitle, { color: palette.accent }]}>Velo app launcher</Text>
+                  <Text style={[styles.settingsIntro, { color: palette.muted }]}>Choose which web app shortcuts appear on your Velo start page. Your choices are saved on this device.</Text>
+                  <View style={[styles.settingsCard, { backgroundColor: palette.surfaceAlt, borderColor: palette.border }]}>
+                    <SettingRow title="Show Web Apps" detail="Master switch for the entire Apps & websites section." value={settings.showWebApps !== false} light={isLight} onValueChange={(value) => updateSetting('showWebApps', value)} />
+                  </View>
+                  <View style={styles.backgroundActions}>
+                    <Pressable onPress={() => updateSetting('webApps', Object.fromEntries(WEB_APPS.map((app) => [app.name, true])))} style={styles.backgroundAction}><Text style={styles.backgroundActionText}>Turn All On</Text></Pressable>
+                    <Pressable onPress={() => updateSetting('showWebApps', false)} style={styles.backgroundAction}><Text style={styles.backgroundActionText}>Turn All Off</Text></Pressable>
+                  </View>
+                  <Text style={[styles.settingsSectionTitle, { color: palette.accent }]}>Choose individual apps</Text>
+                  <View style={[styles.settingsCard, { backgroundColor: palette.surfaceAlt, borderColor: palette.border, paddingHorizontal: 13 }]}>
+                    {WEB_APPS.map((app, index) => (
+                      <React.Fragment key={app.name}>
+                        {index > 0 && <View style={styles.settingDivider} />}
+                        <SettingRow title={app.name} detail={app.url.replace(/^https?:\/\//, '').replace(/\/$/, '')} value={settings.webApps?.[app.name] !== false} light={isLight} onValueChange={(value) => updateSetting('webApps', { ...(settings.webApps || {}), [app.name]: value })} />
+                      </React.Fragment>
+                    ))}
+                  </View>
+                </>}
                 {settingsCategory === 'Search' && <>
               <Text style={[styles.settingsSectionTitle, { color: palette.accent }]}>Search</Text>
               <Text style={[styles.settingsIntro, { color: palette.muted }]}>Choose where Vera sends search terms. Bang shortcuts like !w and !yt use DuckDuckGo.</Text>
