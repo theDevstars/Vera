@@ -2,14 +2,14 @@
   "expo": {
     "name": "Vera Browser",
     "slug": "vera-browser",
-    "version": "1.0.0",
+    "version": "1.0.42",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
     "icon": "./assets/icon.png",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.thedevstars.vera",
-      "buildNumber": "1",
+      "buildNumber": "42",
       "infoPlist": {
         "CFBundleDisplayName": "Vera Browser",
         "CFBundleURLTypes": [
@@ -42,7 +42,7 @@
           ]
         }
       ],
-      "versionCode": 1,
+      "versionCode": 42,
       "label": "Vera Browser"
     },
     "plugins": [
