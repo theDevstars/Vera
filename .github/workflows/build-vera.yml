@@ -37,6 +37,8 @@ jobs:
         run: npm install --legacy-peer-deps
       - name: Generate Vera app icon PNG
         run: npx --yes sharp-cli -i assets/icon.svg -o assets/icon.png resize 1024 1024
+      - name: Generate Velo wallpaper PNG
+        run: npx --yes sharp-cli -i assets/velo-wallpaper.svg -o assets/velo-wallpaper.png resize 900 1900
       - name: Set native app version
         env:
           BUILD_NUMBER: ${{ github.run_number }}
