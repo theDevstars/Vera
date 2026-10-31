@@ -17,6 +17,14 @@
       "category": "utilities",
       "versions": [
         {
+          "version": "1.0.42",
+          "buildVersion": "42",
+          "date": "2026-10-31T01:04:44.105Z",
+          "localizedDescription": "Vera for iPhone and iPad.",
+          "downloadURL": "https://github.com/theDevstars/Vera/releases/download/vera-v1.0.42/Vera-unsigned.ipa",
+          "size": 7840835
+        },
+        {
           "version": "1.0.41",
           "buildVersion": "41",
           "date": "2026-10-31T00:43:42.816Z",
