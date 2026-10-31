@@ -742,6 +742,13 @@ export default function App() {
             <Text style={[styles.veloGreeting, { color: palette.text }]}>{greeting}</Text>
             <Text style={[styles.welcomeBody, { color: palette.muted, textAlign: 'center' }]}>A calmer place to search, read, and explore.</Text>
           </View>
+          <View style={styles.homeSearchWrap}>
+            <View style={[styles.homeSearchBar, { backgroundColor: veloGlassSurface, borderColor: veloGlassBorder }]}>
+              <Text style={{ color: palette.muted, fontSize: 21 }}>⌕</Text>
+              <TextInput value={address} onChangeText={setAddress} onSubmitEditing={() => navigate()} autoCapitalize="none" autoCorrect={false} keyboardType={Platform.OS === 'ios' ? 'web-search' : 'default'} returnKeyType="search" placeholder="Search or enter a website" placeholderTextColor={palette.muted} style={[styles.homeSearchInput, { color: palette.text }]} accessibilityLabel="Search or enter a website" />
+              <Pressable onPress={() => navigate()} style={[styles.homeSearchGo, { backgroundColor: palette.accent }]}><Text style={{ color: isLight ? '#fff' : '#172033', fontWeight: '800', fontSize: 18 }}>→</Text></Pressable>
+            </View>
+          </View>
 
           {settings.showDailyVerse !== false && <View style={[styles.verseCard, styles.veloVerseCard, { backgroundColor: veloGlassSurface, borderColor: veloGlassBorder }]}>
             <View style={styles.verseTopline}>
@@ -1537,6 +1544,10 @@ const styles = StyleSheet.create({
   compactModeInput: { flex: 1, minWidth: 0, fontSize: 15, paddingVertical: 12 },
   compactModeGo: { borderRadius: 12, paddingHorizontal: 14, paddingVertical: 9 },
   compactModeVerse: { marginTop: 24, padding: 18, borderRadius: 20, borderWidth: 1 },
+  homeSearchWrap: { width: '100%', alignItems: 'center', marginBottom: 22, paddingHorizontal: 2 },
+  homeSearchBar: { width: '100%', maxWidth: 560, minHeight: 58, borderRadius: 20, borderWidth: 1, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 15, gap: 11 },
+  homeSearchInput: { flex: 1, minWidth: 0, fontSize: 15, paddingVertical: 13 },
+  homeSearchGo: { width: 38, height: 38, borderRadius: 13, alignItems: 'center', justifyContent: 'center' },
   homeContent: { paddingHorizontal: 18, paddingBottom: 30 },
   homeContentCompact: { paddingHorizontal: 13, paddingBottom: 18 },
   veloHomeContent: { paddingTop: 18 },
