@@ -508,6 +508,12 @@ export default function App() {
     try { await AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(next)); } catch (_) {}
   };
 
+  const updateWebAppPreferences = async (patch) => {
+    const next = { ...settings, ...patch };
+    setSettings(next);
+    try { await AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(next)); } catch (_) {}
+  };
+
   const setInterfacePreset = async (visible) => {
     const next = {
       ...settings,
@@ -1310,8 +1316,8 @@ export default function App() {
                     <SettingRow title="Show Web Apps" detail="Master switch for the entire Apps & websites section." value={settings.showWebApps !== false} light={isLight} onValueChange={(value) => updateSetting('showWebApps', value)} />
                   </View>
                   <View style={styles.backgroundActions}>
-                    <Pressable onPress={() => updateSetting('webApps', Object.fromEntries(WEB_APPS.map((app) => [app.name, true])))} style={styles.backgroundAction}><Text style={styles.backgroundActionText}>Turn All On</Text></Pressable>
-                    <Pressable onPress={() => updateSetting('showWebApps', false)} style={styles.backgroundAction}><Text style={styles.backgroundActionText}>Turn All Off</Text></Pressable>
+                    <Pressable onPress={() => updateWebAppPreferences({ showWebApps: true, webApps: Object.fromEntries(WEB_APPS.map((app) => [app.name, true])) })} style={styles.backgroundAction}><Text style={styles.backgroundActionText}>Turn All On</Text></Pressable>
+                    <Pressable onPress={() => updateWebAppPreferences({ showWebApps: false })} style={styles.backgroundAction}><Text style={styles.backgroundActionText}>Turn All Off</Text></Pressable>
                   </View>
                   <Text style={[styles.settingsSectionTitle, { color: palette.accent }]}>Choose individual apps</Text>
                   <View style={[styles.settingsCard, { backgroundColor: palette.surfaceAlt, borderColor: palette.border, paddingHorizontal: 13 }]}>
