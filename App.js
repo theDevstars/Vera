@@ -903,7 +903,7 @@ export default function App() {
 
   return (
     <ImageBackground
-      source={background ? { uri: background } : undefined}
+      source={background ? { uri: background } : (isVeloLayout ? require('./assets/velo-wallpaper.png') : undefined)}
       style={[styles.root, { backgroundColor: palette.bg }]}
       imageStyle={styles.backgroundImageStyle}
       resizeMode="cover"
