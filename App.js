@@ -905,7 +905,7 @@ export default function App() {
     <ImageBackground
       source={background ? { uri: background } : (isVeloLayout ? require('./assets/velo-wallpaper.png') : undefined)}
       style={[styles.root, { backgroundColor: palette.bg }]}
-      imageStyle={styles.backgroundImageStyle}
+      imageStyle={[styles.backgroundImageStyle, isVeloLayout && { opacity: 0.92 }]}
       resizeMode="cover"
     >
     <SafeAreaView style={[styles.safeRoot, { backgroundColor: isVeloLayout ? 'transparent' : palette.bg }, Platform.OS === 'android' && { paddingTop: NativeStatusBar.currentHeight || 0 }]}>
