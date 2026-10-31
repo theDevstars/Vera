@@ -1027,11 +1027,13 @@ export default function App() {
             <Text style={styles.dockGlyph}>＋</Text>
           </Pressable>
         )}
-        <Pressable onPress={() => setBookmarksVisible(true)} style={({ pressed }) => [styles.dockItem, styles.dockIconTile, { backgroundColor: isLight ? '#e5ebff' : '#26354d' }, pressed && styles.pressed]} accessibilityRole="button" accessibilityLabel="Saved pages">
-          <Text style={[styles.dockGlyph, { color: isLight ? '#4169d8' : '#b9c9ff', fontSize: 21, fontWeight: '800' }]}>▤</Text>{!url && settings.showDockLabels !== false && <Text style={[styles.dockLabel, { color: palette.muted }]}>Saved</Text>}
+        <Pressable onPress={() => setBookmarksVisible(true)} style={({ pressed }) => [styles.dockItem, styles.dockActionTile, { backgroundColor: isVeloLayout ? veloGlassSurface : (isLight ? '#e5ebff' : '#26354d'), borderColor: isVeloLayout ? veloGlassBorder : palette.border }, pressed && styles.pressed]} accessibilityRole="button" accessibilityLabel="Saved pages">
+          <Text style={[styles.dockActionGlyph, { color: isLight ? '#4169d8' : '#b9c9ff' }]}>▤</Text>
+          {settings.showDockLabels !== false && <Text style={[styles.dockActionLabel, { color: palette.text }]}>Saved</Text>}
         </Pressable>
-        <Pressable onPress={() => setSettingsVisible(true)} style={({ pressed }) => [styles.dockItem, styles.dockIconTile, { backgroundColor: isLight ? '#e5ebff' : '#26354d' }, pressed && styles.pressed]} accessibilityRole="button" accessibilityLabel="Settings">
-          <Text style={[styles.dockGlyph, styles.settingsDockGlyph, { color: isLight ? '#328052' : '#9bd5b2', fontSize: 22 }]}>⚙</Text>{!url && settings.showDockLabels !== false && <Text style={[styles.dockLabel, { color: palette.muted }]}>Settings</Text>}
+        <Pressable onPress={() => setSettingsVisible(true)} style={({ pressed }) => [styles.dockItem, styles.dockActionTile, { backgroundColor: isVeloLayout ? veloGlassSurface : (isLight ? '#e5ebff' : '#26354d'), borderColor: isVeloLayout ? veloGlassBorder : palette.border }, pressed && styles.pressed]} accessibilityRole="button" accessibilityLabel="Settings">
+          <Text style={[styles.dockActionGlyph, { color: isLight ? '#328052' : '#9bd5b2' }]}>⚙</Text>
+          {settings.showDockLabels !== false && <Text style={[styles.dockActionLabel, { color: palette.text }]}>Settings</Text>}
         </Pressable>
       </View> : <Pressable onPress={() => setSettingsVisible(true)} style={styles.hiddenSettingsButton} accessibilityRole="button" accessibilityLabel="Open Settings"><Text style={styles.dockGlyph}>⚙</Text></Pressable>}
 
@@ -1479,7 +1481,9 @@ const styles = StyleSheet.create({
   themeChoiceGlyph: { fontSize: 23, fontWeight: '700' },
   themeChoiceText: { fontSize: 14, fontWeight: '800' },
   themeChoiceCheck: { marginLeft: 'auto', color: '#e8b76d', fontWeight: '900', fontSize: 16 },
-  dockIconTile: { minWidth: 46, minHeight: 46, borderRadius: 16, paddingHorizontal: 7, paddingVertical: 5, borderWidth: 1, shadowOffset: { width: 0, height: 2 }, shadowRadius: 7, elevation: 2 },
+  dockActionTile: { minWidth: 66, minHeight: 46, flexDirection: 'row', gap: 6, borderRadius: 16, paddingHorizontal: 10, paddingVertical: 7, borderWidth: 1, shadowColor: '#000', shadowOpacity: 0.12, shadowOffset: { width: 0, height: 2 }, shadowRadius: 7, elevation: 2 },
+  dockActionGlyph: { fontSize: 18, lineHeight: 22, fontWeight: '800' },
+  dockActionLabel: { fontSize: 10, lineHeight: 13, fontWeight: '800', letterSpacing: 0.1 },
 
   settingsDockGlyph: { fontSize: 21, lineHeight: 24 },
 
