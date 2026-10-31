@@ -359,6 +359,7 @@ export default function App() {
   const [url, setUrl] = useState(null);
   const [pageTitle, setPageTitle] = useState('');
   const [loading, setLoading] = useState(false);
+  const [canGoBack, setCanGoBack] = useState(false);
   const [bookmarks, setBookmarks] = useState([]);
   const [settings, setSettings] = useState(DEFAULT_SETTINGS);
   const isLight = settings.theme === 'light';
@@ -965,6 +966,7 @@ export default function App() {
           onNavigationStateChange={(state) => {
             if (state.url) setAddress(state.url);
             if (state.title) setPageTitle(state.title);
+            setCanGoBack(!!state.canGoBack);
           }}
           onShouldStartLoadWithRequest={guardRequest}
           javaScriptEnabled={settings.javaScriptEnabled}
@@ -986,6 +988,17 @@ export default function App() {
         <Pressable onPress={goHome} style={({ pressed }) => [styles.dockItem, pressed && styles.pressed]} accessibilityRole="button" accessibilityLabel="Home">
           <Text style={styles.dockGlyph}>⌂</Text>
         </Pressable>
+        {url ? (
+          <Pressable
+            onPress={() => web.current?.goBack()}
+            disabled={!canGoBack}
+            style={({ pressed }) => [styles.dockItem, styles.browsingBackButton, isVeloLayout && styles.veloClearButton, !canGoBack && styles.backButtonDisabled, pressed && styles.pressed]}
+            accessibilityRole="button"
+            accessibilityLabel="Go back to previous page"
+          >
+            <Text style={[styles.dockGlyph, !canGoBack && styles.backGlyphDisabled]}>‹</Text>
+          </Pressable>
+        ) : null}
         {url ? (
           <View style={[styles.safariAddressBar, { backgroundColor: isVeloLayout ? veloGlassSurface : glassSurface, borderColor: isVeloLayout ? veloGlassBorder : palette.border }]}>
             <Text style={styles.safariLock}>⌑</Text>
@@ -1514,6 +1527,9 @@ const styles = StyleSheet.create({
   hiddenSettingsButton: { position: 'absolute', right: 12, bottom: 12, width: 42, height: 42, borderRadius: 21, alignItems: 'center', justifyContent: 'center', backgroundColor: '#172238', borderWidth: 1, borderColor: '#e6ad60' },
   bottomDock: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', marginHorizontal: 22, marginTop: 5, marginBottom: Platform.OS === 'ios' ? 8 : 10, paddingHorizontal: 10, paddingVertical: 7, borderRadius: 23, backgroundColor: 'rgba(7, 25, 28, 0.78)', borderWidth: 1, borderColor: '#35435c', shadowColor: '#000', shadowOpacity: 0.22, shadowRadius: 12, shadowOffset: { width: 0, height: 4 }, elevation: 8 },
   bottomDockBrowsing: { marginHorizontal: 12, paddingHorizontal: 7, gap: 5 },
+  browsingBackButton: { width: 38, minWidth: 38, height: 42, borderRadius: 14, borderWidth: 1, borderColor: '#3b4961', backgroundColor: 'rgba(13,23,40,0.72)', paddingHorizontal: 0 },
+  backButtonDisabled: { opacity: 0.35 },
+  backGlyphDisabled: { opacity: 0.55 },
   bottomDockVeloFloating: { position: 'absolute', left: 14, right: 14, bottom: Platform.OS === 'ios' ? 12 : 16, zIndex: 30, elevation: 18, marginHorizontal: 0, marginTop: 0, marginBottom: 0, minHeight: 62, paddingHorizontal: 10, paddingVertical: 8, borderRadius: 24, borderWidth: 1, backgroundColor: 'rgba(7,25,28,0.28)', shadowColor: '#000', shadowOpacity: 0.28, shadowRadius: 18, shadowOffset: { width: 0, height: 7 } },
   bottomDockHome: { marginHorizontal: 14, marginTop: 10, marginBottom: Platform.OS === 'ios' ? 12 : 14, paddingHorizontal: 12, paddingVertical: 12, minHeight: 76, gap: 8, borderRadius: 26 },
   homeDockSearch: { flex: 1, minWidth: 0, height: 48, borderRadius: 18, paddingLeft: 12, paddingRight: 5 },
