@@ -1,6 +1,10 @@
 name: Vera Android and Windows Builds
 
 on:
+  push:
+    paths:
+      - "desktop/**"
+      - ".github/workflows/build-vera-platforms.yml"
   workflow_dispatch:
     inputs:
       platform:
