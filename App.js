@@ -37,6 +37,7 @@ const DEFAULT_SETTINGS = {
   privateBrowsing: false,
   blockThirdPartyCookies: true,
   blockAds: true,
+  blockAdultSites: true,
   domStorageEnabled: true,
   showDailyVerse: true,
   showPrivacySnapshot: true,
@@ -77,6 +78,12 @@ const SEARCH_ENGINES = {
 // Expanded ad/tracker rules. This is a best-effort WebView filter, not a full
 // network-level content blocker like uBlock Origin. iOS WebView cannot expose
 // every subresource request to React Native, so cosmetic/script filtering helps too.
+const ADULT_SITE_HOSTS = [
+  'pornhub.com', 'xvideos.com', 'xnxx.com', 'xhamster.com', 'redtube.com',
+  'youporn.com', 'tube8.com', 'spankbang.com', 'chaturbate.com',
+  'onlyfans.com', 'fansly.com', 'rule34.xxx', 'e621.net',
+  'erome.co', 'bubblecum.com',
+];
 const AD_TRACKER_HOSTS = [
   // Google advertising and measurement
   'doubleclick.net', 'googlesyndication.com', 'googleadservices.com',
@@ -553,6 +560,15 @@ export default function App() {
       Alert.alert('Can’t open that address', 'Enter a web address or a search term.');
       return;
     }
+    if (settings.blockAdultSites !== false) {
+      try {
+        const hostname = new URL(target).hostname.toLowerCase();
+        if (ADULT_SITE_HOSTS.some((host) => hostname === host || hostname.endsWith('.' + host))) {
+          Alert.alert('Website blocked', 'Vera blocked this adult website. You can change this in Settings > Security & privacy.');
+          return;
+        }
+      } catch (_) {}
+    }
     setAddress(target);
     setUrl(target);
     setPageTitle('');
@@ -562,6 +578,15 @@ export default function App() {
     const next = request.url;
     if (next === 'about:blank') return true;
     if (!/^https?:\/\//i.test(next)) return false;
+    if (settings.blockAdultSites !== false) {
+      try {
+        const hostname = new URL(next).hostname.toLowerCase();
+        if (ADULT_SITE_HOSTS.some((host) => hostname === host || hostname.endsWith('.' + host))) {
+          Alert.alert('Website blocked', 'Vera blocked this adult website. You can change this in Settings > Security & privacy.');
+          return false;
+        }
+      } catch (_) {}
+    }
     if (settings.blockAds) {
       try {
         const hostname = new URL(next).hostname.toLowerCase();
@@ -1444,6 +1469,8 @@ export default function App() {
               <Text style={[styles.settingsSectionTitle, { color: palette.accent }]}>Security &amp; privacy</Text>
               <Text style={[styles.settingsIntro, { color: palette.muted }]}>Password managers and browser protections are kept together here. Vera does not save or read your password vault.</Text>
               <View style={[styles.settingsCard, { backgroundColor: palette.surfaceAlt, borderColor: palette.border }]}>
+                <SettingRow title="Block adult and explicit websites" detail="Blocks known adult-site domains, including Erome and Bubblecum. This is a domain list, not a complete filter for every explicit page or site." value={settings.blockAdultSites !== false} light={isLight} onValueChange={(value) => updateSetting('blockAdultSites', value)} />
+                <View style={styles.settingDivider} />
                 <SettingRow title="Enhanced ad & tracker blocking" detail="Uses an expanded list of ad and tracking domains, hides common ad containers, and blocks many script-based tracking requests. Some ads may still appear because iOS WebView does not expose every network request." value={settings.blockAds} light={isLight} onValueChange={(value) => updateSetting('blockAds', value)} />
                 <View style={styles.settingDivider} />
                 <SettingRow title="Prefer secure connections" detail="Upgrade http links to https, including links you tap, and block insecure mixed content." value={settings.preferHttps} light={isLight} onValueChange={(value) => updateSetting('preferHttps', value)} />
